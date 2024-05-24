@@ -8,15 +8,12 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Currency;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     MyDatabaseHelper myDb;
 
     ArrayList<String> task_id, title, description, category;
+    CustomAdapter customAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +45,15 @@ public class MainActivity extends AppCompatActivity {
         title = new ArrayList<>();
         description = new ArrayList<>();
         category = new ArrayList<>();
+
+        storeDataInArrays();
+
+        customAdapter = new CustomAdapter(MainActivity.this, task_id, title, description, category);
+        recyclerView.setAdapter(customAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
     }
 
-    void displayData() {
+    void storeDataInArrays() {
         Cursor cursor = myDb.readAllData();
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
