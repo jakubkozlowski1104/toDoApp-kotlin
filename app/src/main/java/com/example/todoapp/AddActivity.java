@@ -29,8 +29,8 @@ public class AddActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Pobranie wartości z pól wejściowych
-                String title = titleInput.getText().toString().trim();
-                String description = descriptionInput.getText().toString().trim();
+                String title = titleInput.getText().toString();
+                String description = descriptionInput.getText().toString();
                 String category = spinner.getSelectedItem().toString();
 
                 if (!title.isEmpty() && !description.isEmpty()) {
