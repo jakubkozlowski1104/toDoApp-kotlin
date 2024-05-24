@@ -56,13 +56,18 @@ public class MainActivity extends AppCompatActivity {
     void storeDataInArrays() {
         Cursor cursor = myDb.readAllData();
         if (cursor.getCount() == 0) {
-            Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Brak danych", Toast.LENGTH_SHORT).show();
         } else {
+            int columnIndexID = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_ID);
+            int columnIndexTitle = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_TITLE);
+            int columnIndexDescription = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DESCRIPTION);
+            int columnIndexCategory = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CATEGORY);
+
             while (cursor.moveToNext()) {
-                task_id.add(cursor.getString(0));
-                title.add(cursor.getString(1));
-                description.add(cursor.getString(2));
-                category.add(cursor.getString(3));
+                task_id.add(cursor.getString(columnIndexID));
+                title.add(cursor.getString(columnIndexTitle));
+                description.add(cursor.getString(columnIndexDescription));
+                category.add(cursor.getString(columnIndexCategory));
             }
         }
     }

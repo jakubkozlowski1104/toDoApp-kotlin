@@ -26,19 +26,23 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_NAME = "tasks";
 
     // Tasks Table Columns
-    private static final String COLUMN_ID = "id";
-    private static final String COLUMN_TITLE = "title";
-    private static final String COLUMN_DESCRIPTION = "description";
-    private static final String COLUMN_CREATED_AT = "created_at";
-    private static final String COLUMN_DUE_AT = "execution_at";
-    private static final String COLUMN_STATUS = "status";
-    private static final String COLUMN_NOTIFICATION = "notification";
-    private static final String COLUMN_CATEGORY = "category";
-    private static final String COLUMN_ATTACHMENT_PATH = "attachment_path";
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_TITLE = "title";
+    public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_CREATED_AT = "created_at";
+    public static final String COLUMN_DUE_AT = "execution_at";
+    public static final String COLUMN_STATUS = "status";
+    public static final String COLUMN_NOTIFICATION = "notification";
+    public static final String COLUMN_CATEGORY = "category";
+    public static final String COLUMN_ATTACHMENT_PATH = "attachment_path";
 
+    public static String getColumnId() {
+        return COLUMN_ID;
+    }
     public MyDatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
+
     }
 
     @Override
@@ -108,6 +112,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             }
         return cursor;
     }
+
 
 }
 
