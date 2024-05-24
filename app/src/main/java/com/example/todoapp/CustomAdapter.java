@@ -14,9 +14,9 @@ import java.util.ArrayList;
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
 
     private Context context;
-    private ArrayList task_id, title, description, category;
+    private ArrayList<String> task_id, title, description, category;
 
-    public CustomAdapter(Context context, ArrayList task_id, ArrayList title, ArrayList description, ArrayList category) {
+    public CustomAdapter(Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category) {
         this.context = context;
         this.task_id = task_id;
         this.title = title;
@@ -42,11 +42,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     @Override
     public int getItemCount() {
-        return 0;
+        return task_id.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         TextView task_id_txt, title_txt, description_txt, category_txt;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             task_id_txt = itemView.findViewById(R.id.taskId);

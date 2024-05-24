@@ -66,4 +66,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    void refreshData() {
+        task_id.clear();
+        title.clear();
+        description.clear();
+        category.clear();
+        storeDataInArrays();
+        customAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshData(); // Odśwież dane, gdy aktywność jest wznawiana
+    }
 }
