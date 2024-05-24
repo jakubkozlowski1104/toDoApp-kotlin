@@ -8,7 +8,8 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,10 +33,12 @@
                 android:id="@+id/taskTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="18dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="5dp"
                 android:text="Wynieść śmieci"
                 android:textColor="@color/black"
+                android:textSize="22dp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/taskId"
                 app:layout_constraintTop_toTopOf="@+id/taskId" />
 
@@ -43,6 +46,8 @@
                 android:id="@+id/taskCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="13dp"
                 android:text="Personal"
                 app:layout_constraintStart_toEndOf="@+id/taskId"
                 app:layout_constraintTop_toBottomOf="@+id/taskTitle" />
@@ -51,10 +56,11 @@
                 android:id="@+id/taskDescription"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="5dp"
                 android:maxLines="10"
-                android:textSize="13dp"
                 android:text="Śmieci już śmierdzą w domu od ddddddddddddddtygodnia!"
+                android:textSize="13dp"
                 app:layout_constraintStart_toEndOf="@+id/taskTitle"
                 app:layout_constraintTop_toTopOf="@+id/taskTitle"
                 app:layout_constraintWidth_default="wrap" />
