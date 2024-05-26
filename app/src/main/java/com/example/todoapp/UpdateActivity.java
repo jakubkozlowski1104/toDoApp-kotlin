@@ -77,19 +77,20 @@ public class UpdateActivity extends AppCompatActivity {
 
     void confirmDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("delete" + title + " ?");
+        builder.setTitle("Delete " + title + " ?");
         builder.setMessage("Are you sure you want to delete " + title + " ?");
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 MyDatabaseHelper myDB = new MyDatabaseHelper(UpdateActivity.this);
                 myDB.deleteOneRow(id);
+                finish();
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                // Dismiss dialog
             }
         });
         builder.create().show();

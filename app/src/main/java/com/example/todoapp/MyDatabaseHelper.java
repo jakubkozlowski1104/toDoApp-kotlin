@@ -1,25 +1,15 @@
-
-
-
-
-
-
 package com.example.todoapp;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
-    // Database Name and Version
-
     private Context context;
     private static final String DATABASE_NAME = "todoApp.db";
     private static final int DATABASE_VERSION = 1;
@@ -43,13 +33,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         this.context = context;
     }
 
-    public static String getColumnId() {
-        return COLUMN_ID;
-    }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Create tasks table
         String createTasksTable = "CREATE TABLE " + TABLE_NAME + " ("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_TITLE + " TEXT, "
@@ -65,36 +50,21 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Usunięcie istniejącej tabeli
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        // Utworzenie nowej tabeli
         onCreate(db);
     }
-
-
 
     void addTask(String title, String description, Category category) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-
-        // Wstawienie wartości dla kolumny tytułu, opisu i kategorii
         cv.put(COLUMN_TITLE, title);
         cv.put(COLUMN_DESCRIPTION, description);
         cv.put(COLUMN_CATEGORY, category.toString());
-
-        // Wstawienie aktualnej daty dla czasu utworzenia zadania
         long currentTimeMillis = System.currentTimeMillis();
         cv.put(COLUMN_CREATED_AT, currentTimeMillis);
-
-        // Ustawienie statusu na 0 (zadanie niezakończone)
         cv.put(COLUMN_STATUS, 0);
-
         cv.put(COLUMN_NOTIFICATION, 0);
-
-        // Wstawienie nowego zadania do bazy danych
         long result = db.insert(TABLE_NAME, null, cv);
-        // Zamknięcie połączenia z bazą danych
-
         if (result == -1) {
             Toast.makeText(context, "Failed to add", Toast.LENGTH_SHORT).show();
         } else {
@@ -103,18 +73,15 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-
     public Cursor readAllData() {
         String query = "SELECT * FROM " + TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
-
         Cursor cursor = null;
-            if(db != null) {
-                cursor = db.rawQuery(query, null);
-            }
+        if(db != null) {
+            cursor = db.rawQuery(query, null);
+        }
         return cursor;
     }
-
 
     void updateData(String row_id, String title, String category, String description) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -122,7 +89,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_TITLE, title);
         cv.put(COLUMN_CATEGORY, category);
         cv.put(COLUMN_DESCRIPTION, description);
-        long result = db.update(TABLE_NAME, cv, "id=?", new String[] {row_id});
+        long result = db.update(TABLE_NAME, cv, "id=?", new String[]{row_id});
         if(result == -1) {
             Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show();
         } else {
@@ -132,22 +99,11 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     void deleteOneRow(String row_id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        long result = db.delete(TABLE_NAME, "_id=?", new String[] {row_id});
+        long result = db.delete(TABLE_NAME, "id=?", new String[]{row_id});
         if (result == -1) {
             Toast.makeText(context, "Failed to Delete!", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, "Sccessfully deleted!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Successfully deleted!", Toast.LENGTH_SHORT).show();
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
