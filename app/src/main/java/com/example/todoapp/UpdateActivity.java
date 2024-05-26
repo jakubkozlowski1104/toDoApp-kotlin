@@ -35,6 +35,11 @@ public class UpdateActivity extends AppCompatActivity {
         description_input = findViewById(R.id.description_input2);
         update_button2 = findViewById(R.id.updateButton);
 
+        // Wypełnienie Spinnera kategoriami
+        ArrayAdapter<Category> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Category.values());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        category_spinner.setAdapter(adapter);
+
         update_button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,16 +51,20 @@ public class UpdateActivity extends AppCompatActivity {
 
     void getAndSetIntentData() {
         if (getIntent().hasExtra("id") && getIntent().hasExtra("title") && getIntent().hasExtra("category") && getIntent().hasExtra("description")) {
-            //pobranie danych z Intent
+            // Pobranie danych z Intent
             id = getIntent().getStringExtra("id");
             title = getIntent().getStringExtra("title");
             category = getIntent().getStringExtra("category");
             description = getIntent().getStringExtra("description");
 
-            //ustawianie danych do widoku
+            // Ustawienie danych w widoku
             title_input.setText(title);
-            category_spinner.setSelection(((ArrayAdapter<String>) category_spinner.getAdapter()).getPosition(category));
             description_input.setText(description);
+
+            // Ustawienie wybranej kategorii w Spinnerze
+            Category selectedCategory = Category.valueOf(category);
+            int position = ((ArrayAdapter<Category>) category_spinner.getAdapter()).getPosition(selectedCategory);
+            category_spinner.setSelection(position);
         } else {
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
         }
