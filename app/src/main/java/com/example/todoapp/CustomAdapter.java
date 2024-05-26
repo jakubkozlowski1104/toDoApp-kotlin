@@ -1,9 +1,11 @@
 package com.example.todoapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +17,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     private Context context;
     private ArrayList<String> task_id, title, description, category;
+    int position;
 
     public CustomAdapter(Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category) {
         this.context = context;
@@ -34,10 +37,22 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        this.position = position;
         holder.task_id_txt.setText(String.valueOf(task_id.get(position)));
         holder.title_txt.setText(String.valueOf(title.get(position)));
-        holder.description_txt.setText(String.valueOf(description.get(position)));
         holder.category_txt.setText(String.valueOf(category.get(position)));
+        holder.description_txt.setText(String.valueOf(description.get(position)));
+        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, UpdateActivity.class);
+                intent.putExtra("id", String.valueOf(task_id.get(position)));
+                intent.putExtra("title", String.valueOf(title.get(position)));
+                intent.putExtra("category", String.valueOf(category.get(position)));
+                intent.putExtra("description", String.valueOf(description.get(position)));
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -47,6 +62,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         TextView task_id_txt, title_txt, description_txt, category_txt;
+        LinearLayout mainLayout;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -54,6 +70,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             title_txt = itemView.findViewById(R.id.taskTitle);
             description_txt = itemView.findViewById(R.id.taskDescription);
             category_txt = itemView.findViewById(R.id.taskCategory);
+            mainLayout = itemView.findViewById(R.id.mainLayout);
         }
     }
 }
