@@ -9,10 +9,12 @@ package com.example.todoapp;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
@@ -36,13 +38,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY = "category";
     public static final String COLUMN_ATTACHMENT_PATH = "attachment_path";
 
-    public static String getColumnId() {
-        return COLUMN_ID;
-    }
-    public MyDatabaseHelper(@Nullable Context context) {
+    MyDatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
+    }
 
+    public static String getColumnId() {
+        return COLUMN_ID;
     }
 
     @Override
@@ -111,6 +113,21 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                 cursor = db.rawQuery(query, null);
             }
         return cursor;
+    }
+
+
+    void updateData(String row_id, String title, String category, String description) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_TITLE, title);
+        cv.put(COLUMN_CATEGORY, category);
+        cv.put(COLUMN_DESCRIPTION, description);
+        long result = db.update(TABLE_NAME, cv, "id=?", new String[] {row_id});
+        if(result == -1) {
+            Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Successfully updated!", Toast.LENGTH_SHORT).show();
+        }
     }
 }
 

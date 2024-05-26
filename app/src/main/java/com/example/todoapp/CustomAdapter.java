@@ -1,5 +1,6 @@
 package com.example.todoapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -18,8 +19,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     private Context context;
     private ArrayList<String> task_id, title, description, category;
     int position;
+    Activity activity;
 
-    public CustomAdapter(Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category) {
+    public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category) {
+        this.activity = activity;
         this.context = context;
         this.task_id = task_id;
         this.title = title;
@@ -50,7 +53,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 intent.putExtra("title", String.valueOf(title.get(position)));
                 intent.putExtra("category", String.valueOf(category.get(position)));
                 intent.putExtra("description", String.valueOf(description.get(position)));
-                context.startActivity(intent);
+                activity.startActivityForResult(intent, 1);
             }
         });
     }

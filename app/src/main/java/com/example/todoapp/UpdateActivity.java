@@ -16,9 +16,6 @@ public class UpdateActivity extends AppCompatActivity {
     EditText title_input, description_input;
     Spinner category_spinner;
     Button update_button2;
-
-    MyDatabaseHelper myDb;
-
     String id, title, category, description;
 
     @Override
@@ -32,19 +29,18 @@ public class UpdateActivity extends AppCompatActivity {
         category_spinner = findViewById(R.id.spinner2);
         description_input = findViewById(R.id.description_input2);
         update_button2 = findViewById(R.id.updateButton);
-
-        // Wypełnienie Spinnera kategoriami
         ArrayAdapter<Category> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Category.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         category_spinner.setAdapter(adapter);
 
+        getAndSetIntentData();
         update_button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Kod do aktualizacji danych w bazie danych
+                MyDatabaseHelper myDB = new MyDatabaseHelper(UpdateActivity.this);
+                myDB.updateData(id, title, category, description);
             }
         });
-        getAndSetIntentData();
     }
 
     void getAndSetIntentData() {
