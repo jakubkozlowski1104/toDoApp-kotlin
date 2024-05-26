@@ -57,8 +57,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1) {
-            recreate();
+        if(requestCode == 1 && resultCode == RESULT_OK) {
+            // Odświeżenie danych po powrocie z UpdateActivity
+            refreshData();
         }
     }
 

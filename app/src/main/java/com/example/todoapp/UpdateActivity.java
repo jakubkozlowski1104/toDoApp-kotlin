@@ -34,28 +34,30 @@ public class UpdateActivity extends AppCompatActivity {
         category_spinner.setAdapter(adapter);
 
         getAndSetIntentData();
+
         update_button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MyDatabaseHelper myDB = new MyDatabaseHelper(UpdateActivity.this);
+
+                title = title_input.getText().toString().trim();
+                description = description_input.getText().toString().trim();
+                category = category_spinner.getSelectedItem().toString();
                 myDB.updateData(id, title, category, description);
+                finish();
             }
         });
     }
 
     void getAndSetIntentData() {
         if (getIntent().hasExtra("id") && getIntent().hasExtra("title") && getIntent().hasExtra("category") && getIntent().hasExtra("description")) {
-            // Pobranie danych z Intent
             id = getIntent().getStringExtra("id");
             title = getIntent().getStringExtra("title");
             category = getIntent().getStringExtra("category");
             description = getIntent().getStringExtra("description");
 
-            // Ustawienie danych w widoku
             title_input.setText(title);
             description_input.setText(description);
-
-            // Ustawienie wybranej kategorii w Spinnerze
             Category selectedCategory = Category.valueOf(category);
             int position = ((ArrayAdapter<Category>) category_spinner.getAdapter()).getPosition(selectedCategory);
             category_spinner.setSelection(position);
