@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -21,8 +22,9 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     FloatingActionButton add_button;
     MyDatabaseHelper myDb;
+    Button settingsButton;
 
-    ArrayList<String> task_id, title, description, category, execution_date;  // Dodaj to pole
+    ArrayList<String> task_id, title, description, category, execution_date, task_status;
     CustomAdapter customAdapter;
 
     @Override
@@ -33,6 +35,18 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         add_button = findViewById(R.id.add_button);
+        settingsButton = findViewById(R.id.settingsButton); // Dodaj to pole
+
+        // Dodaj obsługę kliknięcia przycisku "Settings"
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Przekieruj użytkownika do SettingsActivity
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,11 +60,13 @@ public class MainActivity extends AppCompatActivity {
         title = new ArrayList<>();
         description = new ArrayList<>();
         category = new ArrayList<>();
-        execution_date = new ArrayList<>();  // Dodaj to pole
+        execution_date = new ArrayList<>();
+        task_status = new ArrayList<>(); // Dodaj to pole
 
         storeDataInArrays();
 
-        customAdapter = new CustomAdapter(MainActivity.this, MainActivity.this, task_id, title, description, category, execution_date);
+        customAdapter = new CustomAdapter(MainActivity.this, MainActivity.this, task_id, title, description, category, execution_date, task_status, myDb);
+
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
     }
@@ -75,13 +91,15 @@ public class MainActivity extends AppCompatActivity {
             int columnIndexDescription = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DESCRIPTION);
             int columnIndexCategory = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CATEGORY);
             int columnIndexExecutionDate = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DUE_AT);
+            int columnIndexStatus = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_STATUS); // Dodaj tę linię
 
             while (cursor.moveToNext()) {
                 task_id.add(cursor.getString(columnIndexID));
                 title.add(cursor.getString(columnIndexTitle));
                 description.add(cursor.getString(columnIndexDescription));
                 category.add(cursor.getString(columnIndexCategory));
-                execution_date.add(cursor.getString(columnIndexExecutionDate));  // Dodaj to pole
+                execution_date.add(cursor.getString(columnIndexExecutionDate));
+                task_status.add(cursor.getString(columnIndexStatus)); // Dodaj tę linię
             }
         }
     }
@@ -92,7 +110,8 @@ public class MainActivity extends AppCompatActivity {
         title.clear();
         description.clear();
         category.clear();
-        execution_date.clear();  // Dodaj to pole
+        execution_date.clear();
+        task_status.clear(); // Dodaj tę linię
         storeDataInArrays();
         customAdapter.notifyDataSetChanged();
     }
