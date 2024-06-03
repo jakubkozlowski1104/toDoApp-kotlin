@@ -52,6 +52,8 @@ public class AddActivity extends AppCompatActivity {
                         executionInput.setText(date);
                     }
                 }, year, month, day);
+
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
                 datePickerDialog.show();
             }
         });
