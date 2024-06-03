@@ -1,6 +1,7 @@
 package com.example.todoapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<String> task_id, title, description, category, execution_date, task_status;
     CustomAdapter customAdapter;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         add_button = findViewById(R.id.add_button);
-        settingsButton = findViewById(R.id.settingsButton); // Dodaj to pole
+        settingsButton = findViewById(R.id.settingsButton);
 
-        // Dodaj obsługę kliknięcia przycisku "Settings"
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Przekieruj użytkownika do SettingsActivity
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
             }
@@ -61,8 +61,9 @@ public class MainActivity extends AppCompatActivity {
         description = new ArrayList<>();
         category = new ArrayList<>();
         execution_date = new ArrayList<>();
-        task_status = new ArrayList<>(); // Dodaj to pole
+        task_status = new ArrayList<>();
 
+        sharedPreferences = getSharedPreferences("SettingsPreferences", MODE_PRIVATE);
         storeDataInArrays();
 
         customAdapter = new CustomAdapter(MainActivity.this, MainActivity.this, task_id, title, description, category, execution_date, task_status, myDb);
@@ -75,14 +76,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            // Odświeżenie danych po powrocie z UpdateActivity
             refreshData();
         }
     }
 
-    // W klasie MainActivity
     void storeDataInArrays() {
-        Cursor cursor = myDb.readAllData();
+        boolean hideTasks = sharedPreferences.getBoolean("hideTasks", false);
+        Cursor cursor = hideTasks ? myDb.readUnfinishedTasks() : myDb.readAllData();
+
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "Brak danych", Toast.LENGTH_SHORT).show();
         } else {
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             int columnIndexDescription = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DESCRIPTION);
             int columnIndexCategory = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CATEGORY);
             int columnIndexExecutionDate = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DUE_AT);
-            int columnIndexStatus = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_STATUS); // Dodaj tę linię
+            int columnIndexStatus = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_STATUS);
 
             while (cursor.moveToNext()) {
                 task_id.add(cursor.getString(columnIndexID));
@@ -99,11 +100,10 @@ public class MainActivity extends AppCompatActivity {
                 description.add(cursor.getString(columnIndexDescription));
                 category.add(cursor.getString(columnIndexCategory));
                 execution_date.add(cursor.getString(columnIndexExecutionDate));
-                task_status.add(cursor.getString(columnIndexStatus)); // Dodaj tę linię
+                task_status.add(cursor.getString(columnIndexStatus));
             }
         }
     }
-
 
     void refreshData() {
         task_id.clear();
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         description.clear();
         category.clear();
         execution_date.clear();
-        task_status.clear(); // Dodaj tę linię
+        task_status.clear();
         storeDataInArrays();
         customAdapter.notifyDataSetChanged();
     }
@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        refreshData(); // Odśwież dane, gdy aktywność jest wznawiana
+        refreshData();
     }
 }
-

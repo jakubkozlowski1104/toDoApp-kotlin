@@ -83,6 +83,16 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    Cursor readUnfinishedTasks() {
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
     void updateData(String row_id, String title, String category, String description, long execution_date) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
