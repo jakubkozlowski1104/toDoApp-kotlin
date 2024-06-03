@@ -97,7 +97,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Do something on item click
+                Intent intent = new Intent(context, UpdateActivity.class);
+                intent.putExtra("id", task_id.get(position));
+                intent.putExtra("title", title.get(position));
+                intent.putExtra("description", description.get(position));
+                intent.putExtra("category", category.get(position));
+                intent.putExtra("execution_date", execution_date.get(position));
+                activity.startActivityForResult(intent, 1);
             }
         });
     }
