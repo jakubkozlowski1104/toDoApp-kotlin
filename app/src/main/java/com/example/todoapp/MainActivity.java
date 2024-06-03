@@ -1,11 +1,13 @@
 package com.example.todoapp;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -25,10 +27,13 @@ public class MainActivity extends AppCompatActivity {
     MyDatabaseHelper myDb;
     Button settingsButton;
 
+    SearchView searchView;
+
     ArrayList<String> task_id, title, description, category, execution_date, task_status;
     CustomAdapter customAdapter;
     SharedPreferences sharedPreferences;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +51,22 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        // W metodzie onCreate MainActivity
+        searchView = findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                customAdapter.filter(newText);
+                return false;
+            }
+        });
+
 
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override

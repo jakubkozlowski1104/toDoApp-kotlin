@@ -34,14 +34,20 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     private Activity activity;
     private Context context;
+    private ArrayList<String> originalTask_id, originalTitle, originalDescription, originalCategory, originalExecution_date, originalTask_status;
     private ArrayList<String> task_id, title, description, category, execution_date, task_status;
     private MyDatabaseHelper myDb;
     int position;
 
-
     public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, MyDatabaseHelper myDb) {
         this.activity = activity;
         this.context = context;
+        this.originalTask_id = new ArrayList<>(task_id);
+        this.originalTitle = new ArrayList<>(title);
+        this.originalDescription = new ArrayList<>(description);
+        this.originalCategory = new ArrayList<>(category);
+        this.originalExecution_date = new ArrayList<>(execution_date);
+        this.originalTask_status = new ArrayList<>(task_status);
         this.task_id = task_id;
         this.title = title;
         this.description = description;
@@ -50,7 +56,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         this.task_status = task_status;
         this.myDb = myDb;
     }
-
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -121,6 +126,56 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         return sdf.format(new Date(millis));
     }
+
+    public void filter(String text) {
+        if (text.isEmpty()) {
+            task_id.clear();
+            title.clear();
+            description.clear();
+            category.clear();
+            execution_date.clear();
+            task_status.clear();
+            task_id.addAll(originalTask_id);
+            title.addAll(originalTitle);
+            description.addAll(originalDescription);
+            category.addAll(originalCategory);
+            execution_date.addAll(originalExecution_date);
+            task_status.addAll(originalTask_status);
+        } else {
+            ArrayList<String> filteredIds = new ArrayList<>();
+            ArrayList<String> filteredTitles = new ArrayList<>();
+            ArrayList<String> filteredDescriptions = new ArrayList<>();
+            ArrayList<String> filteredCategories = new ArrayList<>();
+            ArrayList<String> filteredExecutionDates = new ArrayList<>();
+            ArrayList<String> filteredTaskStatus = new ArrayList<>();
+
+            for (int i = 0; i < title.size(); i++) {
+                if (title.get(i).toLowerCase().contains(text.toLowerCase())) {
+                    filteredIds.add(task_id.get(i));
+                    filteredTitles.add(title.get(i));
+                    filteredDescriptions.add(description.get(i));
+                    filteredCategories.add(category.get(i));
+                    filteredExecutionDates.add(execution_date.get(i));
+                    filteredTaskStatus.add(task_status.get(i));
+                }
+            }
+
+            task_id.clear();
+            title.clear();
+            description.clear();
+            category.clear();
+            execution_date.clear();
+            task_status.clear();
+            task_id.addAll(filteredIds);
+            title.addAll(filteredTitles);
+            description.addAll(filteredDescriptions);
+            category.addAll(filteredCategories);
+            execution_date.addAll(filteredExecutionDates);
+            task_status.addAll(filteredTaskStatus);
+        }
+        notifyDataSetChanged();
+    }
+
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         CheckBox checkBox;
