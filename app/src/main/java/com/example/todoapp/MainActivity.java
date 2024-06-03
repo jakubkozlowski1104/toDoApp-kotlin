@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 customAdapter.filter(newText);
+                storeDataInArrays(newText); // Aktualizacja danych na podstawie wyników wyszukiwania
                 return false;
             }
         });
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         task_status = new ArrayList<>();
 
         sharedPreferences = getSharedPreferences("SettingsPreferences", MODE_PRIVATE);
-        storeDataInArrays();
+        storeDataInArrays(""); // Początkowe pobranie danych bez filtrowania
 
         customAdapter = new CustomAdapter(MainActivity.this, MainActivity.this, task_id, title, description, category, execution_date, task_status, myDb);
 
@@ -112,13 +113,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void storeDataInArrays() {
+    void storeDataInArrays(String searchText) {
         boolean hideTasks = sharedPreferences.getBoolean("hideTasks", false);
-        Cursor cursor = hideTasks ? myDb.readUnfinishedTasks() : myDb.readAllData();
+        Cursor cursor;
         if (sortByTimeCheckBox.isChecked()) {
-            cursor = hideTasks ? myDb.readUnfinishedTasksSortedByTime() : myDb.readAllDataSortedByTime();
+            cursor = hideTasks ? myDb.readUnfinishedTasksSortedByTime(searchText) : myDb.readAllDataSortedByTime(searchText);
         } else {
-            cursor = hideTasks ? myDb.readUnfinishedTasks() : myDb.readAllData();
+            cursor = hideTasks ? myDb.readUnfinishedTasks(searchText) : myDb.readAllData(searchText);
         }
 
         if (cursor.getCount() == 0) {
@@ -130,6 +131,13 @@ public class MainActivity extends AppCompatActivity {
             int columnIndexCategory = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CATEGORY);
             int columnIndexExecutionDate = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DUE_AT);
             int columnIndexStatus = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_STATUS);
+
+            task_id.clear();
+            title.clear();
+            description.clear();
+            category.clear();
+            execution_date.clear();
+            task_status.clear();
 
             while (cursor.moveToNext()) {
                 task_id.add(cursor.getString(columnIndexID));
@@ -143,15 +151,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void refreshData() {
-        task_id.clear();
-        title.clear();
-        description.clear();
-        category.clear();
-        execution_date.clear();
-        task_status.clear();
-        storeDataInArrays();
+        storeDataInArrays(""); // Odświeżanie danych bez filtrowania
         customAdapter.notifyDataSetChanged();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
