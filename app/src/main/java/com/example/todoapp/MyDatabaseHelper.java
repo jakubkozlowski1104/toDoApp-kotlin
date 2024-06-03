@@ -83,12 +83,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    void updateData(String row_id, String title, String category, String description) {
+    void updateData(String row_id, String title, String category, String description, long execution_date) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_TITLE, title);
         cv.put(COLUMN_CATEGORY, category);
         cv.put(COLUMN_DESCRIPTION, description);
+        cv.put(COLUMN_DUE_AT, execution_date); // Dodajemy wartość execution_date
         long result = db.update(TABLE_NAME, cv, "id=?", new String[]{row_id});
         if(result == -1) {
             Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show();
@@ -96,6 +97,21 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "Successfully updated!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    void updateTaskStatus(String taskId, boolean isChecked) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        // Aktualizuj kolumnę COLUMN_STATUS na 1, jeśli CheckBox jest zaznaczony, w przeciwnym razie na 0
+        cv.put(COLUMN_STATUS, isChecked ? 1 : 0);
+        int result = db.update(TABLE_NAME, cv, COLUMN_ID + "=?", new String[]{taskId});
+        if (result > 0) {
+            Toast.makeText(context, "Task status updated successfully", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Failed to update task status", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
     void deleteOneRow(String row_id) {
         SQLiteDatabase db = this.getWritableDatabase();

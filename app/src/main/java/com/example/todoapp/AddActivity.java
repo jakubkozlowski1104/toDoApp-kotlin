@@ -64,13 +64,13 @@ public class AddActivity extends AppCompatActivity {
                 // Pobranie wartości z pól wejściowych
                 String title = titleInput.getText().toString();
                 String description = descriptionInput.getText().toString();
-                String category = spinner.getSelectedItem().toString();
+                String category = spinner.getSelectedItem().toString().toUpperCase();
                 String executionDateStr = executionInput.getText().toString();
                 long executionDateMillis = convertDateStringToMillis(executionDateStr);
 
                 if (!title.isEmpty() && !description.isEmpty() && executionDateMillis != -1) {
                     MyDatabaseHelper dbHelper = new MyDatabaseHelper(AddActivity.this);
-                    dbHelper.addTask(title, description, Category.valueOf(category.toUpperCase()), executionDateMillis); // Zamiana na wielkie litery
+                    dbHelper.addTask(title, description, Category.valueOf(category), executionDateMillis); // Zamiana na wielkie litery
                     Toast.makeText(AddActivity.this, "Task added successfully", Toast.LENGTH_SHORT).show();
                     finish(); // Zakończenie aktywności po dodaniu zadania
                 } else {
