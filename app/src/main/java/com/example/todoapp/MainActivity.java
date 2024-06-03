@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     SearchView searchView;
 
+    CheckBox sortByTimeCheckBox;
     ArrayList<String> task_id, title, description, category, execution_date, task_status;
     CustomAdapter customAdapter;
     SharedPreferences sharedPreferences;
@@ -44,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
         add_button = findViewById(R.id.add_button);
         settingsButton = findViewById(R.id.settingsButton);
 
+        sortByTimeCheckBox = findViewById(R.id.sortByTimeCheckBox);
+
+        sortByTimeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                refreshData();
+            }
+        });
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,6 +115,11 @@ public class MainActivity extends AppCompatActivity {
     void storeDataInArrays() {
         boolean hideTasks = sharedPreferences.getBoolean("hideTasks", false);
         Cursor cursor = hideTasks ? myDb.readUnfinishedTasks() : myDb.readAllData();
+        if (sortByTimeCheckBox.isChecked()) {
+            cursor = hideTasks ? myDb.readUnfinishedTasksSortedByTime() : myDb.readAllDataSortedByTime();
+        } else {
+            cursor = hideTasks ? myDb.readUnfinishedTasks() : myDb.readAllData();
+        }
 
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "Brak danych", Toast.LENGTH_SHORT).show();
@@ -136,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
         storeDataInArrays();
         customAdapter.notifyDataSetChanged();
     }
-
     @Override
     protected void onResume() {
         super.onResume();
