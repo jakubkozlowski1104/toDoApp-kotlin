@@ -54,12 +54,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void addTask(String title, String description, Category category) {
+    void addTask(String title, String description, Category category, long execution_at) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_TITLE, title);
         cv.put(COLUMN_DESCRIPTION, description);
         cv.put(COLUMN_CATEGORY, category.toString());
+        cv.put(COLUMN_DUE_AT, execution_at);
         long currentTimeMillis = System.currentTimeMillis();
         cv.put(COLUMN_CREATED_AT, currentTimeMillis);
         cv.put(COLUMN_STATUS, 0);
@@ -70,14 +71,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         } else {
             Toast.makeText(context, "Added successfully!", Toast.LENGTH_SHORT).show();
         }
-        db.close();
     }
 
-    public Cursor readAllData() {
+    Cursor readAllData() {
         String query = "SELECT * FROM " + TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
-        if(db != null) {
+        if (db != null) {
             cursor = db.rawQuery(query, null);
         }
         return cursor;
