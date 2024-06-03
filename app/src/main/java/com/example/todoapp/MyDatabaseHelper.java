@@ -69,7 +69,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         if (result == -1) {
             Toast.makeText(context, "Failed to add", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, "Added successfully!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -104,7 +103,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         if(result == -1) {
             Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, "Successfully updated!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -115,7 +113,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_STATUS, isChecked ? 1 : 0);
         int result = db.update(TABLE_NAME, cv, COLUMN_ID + "=?", new String[]{taskId});
         if (result > 0) {
-            Toast.makeText(context, "Task status updated successfully", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(context, "Failed to update task status", Toast.LENGTH_SHORT).show();
         }

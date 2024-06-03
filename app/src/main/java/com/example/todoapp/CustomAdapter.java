@@ -51,18 +51,22 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         this.myDb = myDb;
     }
 
-    @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.my_row, parent, false);
-        return new MyViewHolder(view);
+        MyViewHolder viewHolder = new MyViewHolder(view);
+        viewHolder.currentPosition = viewType;
+        return viewHolder;
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.checkBox.setChecked(false); // Ustawienie domyślnej wartości na false
         holder.showStatus.setText("0"); // Ustawienie domyślnego statusu na "0"
+        holder.currentPosition = position;
+
 
         // Ustawienie stanu checkboxa i statusu na podstawie danych
         if (task_status != null && position < task_status.size()) {
@@ -123,6 +127,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         TextView showStatus;
         TextView title_txt, category_txt, description_txt, execution_date_txt;
         LinearLayout mainLayout;
+        int currentPosition;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -135,4 +140,5 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             mainLayout = itemView.findViewById(R.id.mainLayout);
         }
     }
+
 }
