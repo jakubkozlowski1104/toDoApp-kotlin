@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton add_button;
     MyDatabaseHelper myDb;
 
-    ArrayList<String> task_id, title, description, category;
+    ArrayList<String> task_id, title, description, category, execution_date;  // Dodaj to pole
     CustomAdapter customAdapter;
 
     @Override
@@ -46,10 +46,11 @@ public class MainActivity extends AppCompatActivity {
         title = new ArrayList<>();
         description = new ArrayList<>();
         category = new ArrayList<>();
+        execution_date = new ArrayList<>();  // Dodaj to pole
 
         storeDataInArrays();
 
-        customAdapter = new CustomAdapter(MainActivity.this, MainActivity.this, task_id, title, description, category);
+        customAdapter = new CustomAdapter(MainActivity.this, MainActivity.this, task_id, title, description, category, execution_date);
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
     }
@@ -57,12 +58,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1 && resultCode == RESULT_OK) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
             // Odświeżenie danych po powrocie z UpdateActivity
             refreshData();
         }
     }
 
+    // W klasie MainActivity
     void storeDataInArrays() {
         Cursor cursor = myDb.readAllData();
         if (cursor.getCount() == 0) {
@@ -72,21 +74,25 @@ public class MainActivity extends AppCompatActivity {
             int columnIndexTitle = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_TITLE);
             int columnIndexDescription = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DESCRIPTION);
             int columnIndexCategory = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CATEGORY);
+            int columnIndexExecutionDate = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DUE_AT);
 
             while (cursor.moveToNext()) {
                 task_id.add(cursor.getString(columnIndexID));
                 title.add(cursor.getString(columnIndexTitle));
                 description.add(cursor.getString(columnIndexDescription));
                 category.add(cursor.getString(columnIndexCategory));
+                execution_date.add(cursor.getString(columnIndexExecutionDate));  // Dodaj to pole
             }
         }
     }
+
 
     void refreshData() {
         task_id.clear();
         title.clear();
         description.clear();
         category.clear();
+        execution_date.clear();  // Dodaj to pole
         storeDataInArrays();
         customAdapter.notifyDataSetChanged();
     }
@@ -97,3 +103,4 @@ public class MainActivity extends AppCompatActivity {
         refreshData(); // Odśwież dane, gdy aktywność jest wznawiana
     }
 }
+
