@@ -43,11 +43,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/description_input2" />
 
+
     <Button
         android:id="@+id/updateButton"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="60dp"
         android:text="Update"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,4 +65,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/updateButton" />
+
+    <EditText
+        android:id="@+id/execution_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Execution Date"
+        android:inputType="text"
+        android:focusable="false"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/updateButton"
+        app:layout_constraintStart_toStartOf="@+id/spinner2"
+        app:layout_constraintTop_toBottomOf="@+id/spinner2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

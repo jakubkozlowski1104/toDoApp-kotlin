@@ -6,4 +6,3 @@ public enum Category {
     SHOPPING,
     OTHER
 }
-
