@@ -72,43 +72,31 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // In MyDatabaseHelper
     Cursor readAllData(String searchText) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TITLE + " LIKE '%" + searchText + "%'";
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-        if (db != null) {
-            cursor = db.rawQuery(query, null);
-        }
-        return cursor;
+        return db != null ? db.rawQuery(query, null) : null;
     }
+
     Cursor readUnfinishedTasks(String searchText) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0 AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%'";
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-        if (db != null) {
-            cursor = db.rawQuery(query, null);
-        }
-        return cursor;
+        return db != null ? db.rawQuery(query, null) : null;
     }
+
     Cursor readAllDataSortedByTime(String searchText) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TITLE + " LIKE '%" + searchText + "%' ORDER BY " + COLUMN_DUE_AT + " ASC";
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-        if (db != null) {
-            cursor = db.rawQuery(query, null);
-        }
-        return cursor;
+        return db != null ? db.rawQuery(query, null) : null;
     }
 
     Cursor readUnfinishedTasksSortedByTime(String searchText) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0 AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%' ORDER BY " + COLUMN_DUE_AT + " ASC";
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-        if (db != null) {
-            cursor = db.rawQuery(query, null);
-        }
-        return cursor;
+        return db != null ? db.rawQuery(query, null) : null;
     }
+
 
 
     void updateData(String row_id, String title, String category, String description, long execution_date) {

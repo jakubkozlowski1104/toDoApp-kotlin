@@ -30,9 +30,8 @@ public class MainActivity extends AppCompatActivity {
     Button settingsButton;
 
     SearchView searchView;
-
     CheckBox sortByTimeCheckBox;
-    ArrayList<String> task_id, title, description, category, execution_date, task_status;
+    ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at;
     CustomAdapter customAdapter;
     SharedPreferences sharedPreferences;
 
@@ -55,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 refreshData();
             }
         });
+
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // W metodzie onCreate MainActivity
         searchView = findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -73,12 +72,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                storeDataInArrays(newText); // Update data based on search results
                 customAdapter.filter(newText);
-                storeDataInArrays(newText); // Aktualizacja danych na podstawie wyników wyszukiwania
                 return false;
             }
         });
-
 
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,11 +93,23 @@ public class MainActivity extends AppCompatActivity {
         category = new ArrayList<>();
         execution_date = new ArrayList<>();
         task_status = new ArrayList<>();
+        created_at = new ArrayList<>(); // Initialize created_at
 
         sharedPreferences = getSharedPreferences("SettingsPreferences", MODE_PRIVATE);
-        storeDataInArrays(""); // Początkowe pobranie danych bez filtrowania
+        storeDataInArrays(""); // Initial data fetch without filtering
 
-        customAdapter = new CustomAdapter(MainActivity.this, MainActivity.this, task_id, title, description, category, execution_date, task_status, myDb);
+        customAdapter = new CustomAdapter(
+                MainActivity.this,
+                MainActivity.this,
+                task_id,
+                title,
+                description,
+                category,
+                execution_date,
+                task_status,
+                created_at,
+                myDb
+        );
 
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
@@ -131,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
             int columnIndexCategory = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CATEGORY);
             int columnIndexExecutionDate = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DUE_AT);
             int columnIndexStatus = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_STATUS);
+            int columnIndexCreatedAt = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CREATED_AT);
 
             task_id.clear();
             title.clear();
@@ -138,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
             category.clear();
             execution_date.clear();
             task_status.clear();
+            created_at.clear();
 
             while (cursor.moveToNext()) {
                 task_id.add(cursor.getString(columnIndexID));
@@ -146,12 +158,13 @@ public class MainActivity extends AppCompatActivity {
                 category.add(cursor.getString(columnIndexCategory));
                 execution_date.add(cursor.getString(columnIndexExecutionDate));
                 task_status.add(cursor.getString(columnIndexStatus));
+                created_at.add(cursor.getString(columnIndexCreatedAt));
             }
         }
     }
 
     void refreshData() {
-        storeDataInArrays(""); // Odświeżanie danych bez filtrowania
+        storeDataInArrays(""); // Refresh data without filtering
         customAdapter.notifyDataSetChanged();
     }
 

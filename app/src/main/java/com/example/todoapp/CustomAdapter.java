@@ -34,12 +34,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     private Activity activity;
     private Context context;
-    private ArrayList<String> originalTask_id, originalTitle, originalDescription, originalCategory, originalExecution_date, originalTask_status;
-    private ArrayList<String> task_id, title, description, category, execution_date, task_status;
+    private ArrayList<String> originalTask_id, originalTitle, originalDescription, originalCategory, originalExecution_date, originalTask_status, originalCreated_at;
+    private ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at;
     private MyDatabaseHelper myDb;
-    int position;
 
-    public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, MyDatabaseHelper myDb) {
+    public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, ArrayList<String> created_at, MyDatabaseHelper myDb) {
         this.activity = activity;
         this.context = context;
         this.originalTask_id = new ArrayList<>(task_id);
@@ -48,51 +47,26 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         this.originalCategory = new ArrayList<>(category);
         this.originalExecution_date = new ArrayList<>(execution_date);
         this.originalTask_status = new ArrayList<>(task_status);
+        this.originalCreated_at = new ArrayList<>(created_at);
         this.task_id = task_id;
         this.title = title;
         this.description = description;
         this.category = category;
         this.execution_date = execution_date;
         this.task_status = task_status;
+        this.created_at = created_at;
         this.myDb = myDb;
     }
+
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.my_row, parent, false);
-        MyViewHolder viewHolder = new MyViewHolder(view);
-        viewHolder.currentPosition = viewType;
-        return viewHolder;
+        return new MyViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.checkBox.setChecked(false); // Ustawienie domyślnej wartości na false
-        holder.showStatus.setText("0"); // Ustawienie domyślnego statusu na "0"
-        holder.currentPosition = position;
-
-
-        // Ustawienie stanu checkboxa i statusu na podstawie danych
-        if (task_status != null && position < task_status.size()) {
-            boolean isChecked = task_status.get(position).equals("1"); // Sprawdzenie, czy status w bazie danych to 1
-            holder.checkBox.setChecked(isChecked); // Ustawienie stanu checkboxa
-            holder.showStatus.setText(task_status.get(position)); // Ustawienie statusu w TextView
-        }
-
-        // Obsługa zdarzenia kliknięcia checkboxa
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // Aktualizacja statusu zadania w bazie danych
-                myDb.updateTaskStatus(task_id.get(position), isChecked);
-
-                // Aktualizacja wyświetlanego statusu w TextView
-                holder.showStatus.setText(isChecked ? "1" : "0");
-            }
-        });
-
-        // Pozostała część onBindViewHolder
         holder.title_txt.setText(title.get(position));
         holder.category_txt.setText(category.get(position));
         holder.description_txt.setText(description.get(position));
@@ -101,6 +75,29 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             holder.execution_date_txt.setText(convertMillisToDate(Long.parseLong(execution_date.get(position))));
         } else {
             holder.execution_date_txt.setText("N/A");
+        }
+
+        if (created_at != null && position < created_at.size() && created_at.get(position) != null) {
+            holder.showCreatedDate.setText("Created at: " + convertMillisToDate(Long.parseLong(created_at.get(position))));
+        } else {
+            holder.showCreatedDate.setText("Created at: N/A");
+        }
+
+        if (task_status != null && position < task_status.size()) {
+            boolean isChecked = task_status.get(position).equals("1");
+            holder.checkBox.setOnCheckedChangeListener(null); // Prevent recursive calls
+            holder.checkBox.setChecked(isChecked);
+            holder.showStatus.setText(isChecked ? "1" : "0");
+
+            holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (position < task_id.size()) {
+                        myDb.updateTaskStatus(task_id.get(position), isChecked);
+                        holder.showStatus.setText(isChecked ? "1" : "0");
+                    }
+                }
+            });
         }
 
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
@@ -135,12 +132,14 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             category.clear();
             execution_date.clear();
             task_status.clear();
+            created_at.clear();
             task_id.addAll(originalTask_id);
             title.addAll(originalTitle);
             description.addAll(originalDescription);
             category.addAll(originalCategory);
             execution_date.addAll(originalExecution_date);
             task_status.addAll(originalTask_status);
+            created_at.addAll(originalCreated_at);
         } else {
             ArrayList<String> filteredIds = new ArrayList<>();
             ArrayList<String> filteredTitles = new ArrayList<>();
@@ -148,6 +147,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             ArrayList<String> filteredCategories = new ArrayList<>();
             ArrayList<String> filteredExecutionDates = new ArrayList<>();
             ArrayList<String> filteredTaskStatus = new ArrayList<>();
+            ArrayList<String> filteredCreatedAt = new ArrayList<>();
 
             for (int i = 0; i < title.size(); i++) {
                 if (title.get(i).toLowerCase().contains(text.toLowerCase())) {
@@ -157,6 +157,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                     filteredCategories.add(category.get(i));
                     filteredExecutionDates.add(execution_date.get(i));
                     filteredTaskStatus.add(task_status.get(i));
+                    filteredCreatedAt.add(created_at.get(i));
                 }
             }
 
@@ -166,34 +167,35 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             category.clear();
             execution_date.clear();
             task_status.clear();
+            created_at.clear();
             task_id.addAll(filteredIds);
             title.addAll(filteredTitles);
             description.addAll(filteredDescriptions);
             category.addAll(filteredCategories);
             execution_date.addAll(filteredExecutionDates);
             task_status.addAll(filteredTaskStatus);
+            created_at.addAll(filteredCreatedAt);
         }
         notifyDataSetChanged();
     }
 
-
     public class MyViewHolder extends RecyclerView.ViewHolder {
+        TextView title_txt, category_txt, description_txt, execution_date_txt, showCreatedDate, showStatus; // Add showStatus
         CheckBox checkBox;
-        TextView showStatus;
-        TextView title_txt, category_txt, description_txt, execution_date_txt;
         LinearLayout mainLayout;
-        int currentPosition;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            checkBox = itemView.findViewById(R.id.checkBox);
-            showStatus = itemView.findViewById(R.id.showStatus);
             title_txt = itemView.findViewById(R.id.taskTitle);
             category_txt = itemView.findViewById(R.id.taskCategory);
             description_txt = itemView.findViewById(R.id.taskDescription);
             execution_date_txt = itemView.findViewById(R.id.exDate);
+            showCreatedDate = itemView.findViewById(R.id.showCreatedDate);
+            showStatus = itemView.findViewById(R.id.showStatus); // Initialize showStatus
+            checkBox = itemView.findViewById(R.id.checkBox);
             mainLayout = itemView.findViewById(R.id.mainLayout);
         }
     }
-
 }
+
+
