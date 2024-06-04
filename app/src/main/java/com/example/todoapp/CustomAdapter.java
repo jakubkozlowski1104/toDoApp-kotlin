@@ -113,7 +113,9 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 // Uruchom usługę powiadomień używając kontekstu z MainActivity
                 Intent notificationIntent = new Intent(mContext, NotificationService.class);
                 notificationIntent.putExtra("taskTitle", taskTitle);
+                notificationIntent.putExtra("executionTimeMillis", Long.parseLong(execution_date.get(position)));
                 mContext.startService(notificationIntent);
+
             }
         });
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
