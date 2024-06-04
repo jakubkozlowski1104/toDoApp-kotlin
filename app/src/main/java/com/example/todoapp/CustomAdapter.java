@@ -98,7 +98,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (position < task_id.size()) {
                         myDb.updateTaskStatus(task_id.get(position), isChecked);
-                        holder.showStatus.setText(isChecked ? "1" : "0");
                     }
                 }
             });
