@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,8 +38,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     private ArrayList<String> originalTask_id, originalTitle, originalDescription, originalCategory, originalExecution_date, originalTask_status, originalCreated_at;
     private ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at;
     private MyDatabaseHelper myDb;
+    Button showNotifyButton;
+    private Context mContext;
 
     public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, ArrayList<String> created_at, MyDatabaseHelper myDb) {
+        this.activity = activity;
+        this.mContext = context;
         this.activity = activity;
         this.context = context;
         this.originalTask_id = new ArrayList<>(task_id);
@@ -87,7 +92,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             boolean isChecked = task_status.get(position).equals("1");
             holder.checkBox.setOnCheckedChangeListener(null);
             holder.checkBox.setChecked(isChecked);
-            holder.showStatus.setText(isChecked ? "1" : "0");
 
             holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -100,6 +104,18 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             });
         }
 
+        holder.showNotifyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentPosition = holder.getAdapterPosition();
+                String taskTitle = title.get(currentPosition);
+
+                // Uruchom usługę powiadomień używając kontekstu z MainActivity
+                Intent notificationIntent = new Intent(mContext, NotificationService.class);
+                notificationIntent.putExtra("taskTitle", taskTitle);
+                mContext.startService(notificationIntent);
+            }
+        });
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,6 +199,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         TextView title_txt, category_txt, description_txt, execution_date_txt, showCreatedDate, showStatus;
         CheckBox checkBox;
         LinearLayout mainLayout;
+        Button showNotifyButton;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -191,9 +208,9 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             description_txt = itemView.findViewById(R.id.taskDescription);
             execution_date_txt = itemView.findViewById(R.id.exDate);
             showCreatedDate = itemView.findViewById(R.id.showCreatedDate);
-            showStatus = itemView.findViewById(R.id.showStatus); // Initialize showStatus
             checkBox = itemView.findViewById(R.id.checkBox);
             mainLayout = itemView.findViewById(R.id.mainLayout);
+            showNotifyButton = itemView.findViewById(R.id.showNotify);
         }
     }
 }

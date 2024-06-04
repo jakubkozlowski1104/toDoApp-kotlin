@@ -85,11 +85,13 @@
                 app:layout_constraintEnd_toStartOf="@+id/taskDescription"
                 app:layout_constraintTop_toTopOf="@+id/taskTitle" />
 
-            <TextView
-                android:id="@+id/showStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
+            <Button
+                android:id="@+id/showNotify"
+                android:layout_width="95dp"
+                android:layout_height="35dp"
+                android:text="notify"
+                android:textSize="10dp"
+                app:layout_constraintEnd_toEndOf="@+id/showCreatedDate"
                 app:layout_constraintStart_toEndOf="@+id/taskDescription"
                 app:layout_constraintTop_toBottomOf="@+id/taskTitle" />
 
@@ -100,7 +102,7 @@
                 android:text="created at: 24.05.2025"
                 android:textSize="10dp"
                 app:layout_constraintStart_toEndOf="@+id/taskDescription"
-                app:layout_constraintTop_toBottomOf="@+id/showStatus" />
+                app:layout_constraintTop_toBottomOf="@+id/showNotify" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
