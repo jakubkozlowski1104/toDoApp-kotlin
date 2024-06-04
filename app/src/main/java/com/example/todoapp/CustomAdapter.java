@@ -180,7 +180,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView title_txt, category_txt, description_txt, execution_date_txt, showCreatedDate, showStatus; // Add showStatus
+        TextView title_txt, category_txt, description_txt, execution_date_txt, showCreatedDate, showStatus;
         CheckBox checkBox;
         LinearLayout mainLayout;
 
