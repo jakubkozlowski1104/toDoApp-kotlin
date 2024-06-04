@@ -85,7 +85,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
         if (task_status != null && position < task_status.size()) {
             boolean isChecked = task_status.get(position).equals("1");
-            holder.checkBox.setOnCheckedChangeListener(null); // Prevent recursive calls
+            holder.checkBox.setOnCheckedChangeListener(null);
             holder.checkBox.setChecked(isChecked);
             holder.showStatus.setText(isChecked ? "1" : "0");
 
