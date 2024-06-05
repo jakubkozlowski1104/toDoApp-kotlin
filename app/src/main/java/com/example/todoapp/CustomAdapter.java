@@ -3,6 +3,7 @@ package com.example.todoapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     private ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at;
     private ArrayList<String> attachment_path, originalAttachment_path;
     private MyDatabaseHelper myDb;
-
+    private static final String TAG = "checkAttach";
     public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, ArrayList<String> created_at, ArrayList<String> attachment_path, MyDatabaseHelper myDb) {
         this.activity = activity;
         this.context = context != null ? context : activity.getApplicationContext(); // Ensure context is not null
@@ -104,9 +105,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
         if (attachment_path != null && position < attachment_path.size() && attachment_path.get(position) != null) {
             holder.attachmentInfoSingleTask.setText(attachment_path.get(position));
+            Log.d(TAG, "onBindViewHolder: Attachment Path - " + attachment_path.get(position));
         } else {
             holder.attachmentInfoSingleTask.setText("No attachment");
+            Log.d(TAG, "onBindViewHolder: No attachment");
         }
+
 
         holder.showNotifyButton.setOnClickListener(new View.OnClickListener() {
             @Override

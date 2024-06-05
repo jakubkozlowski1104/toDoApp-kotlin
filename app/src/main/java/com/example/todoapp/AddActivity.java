@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -33,7 +34,7 @@ public class AddActivity extends AppCompatActivity {
     private Calendar calendar;
     private static final int PICK_FILE_REQUEST_CODE = 1001;
     private Uri attachmentUri;
-
+    private static final String TAG = "checkAttach";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,28 +99,32 @@ public class AddActivity extends AppCompatActivity {
             if (attachmentUri != null) {
                 String attachmentFileName = getAttachmentFileName(attachmentUri);
                 attachmentInfo.setText(attachmentFileName);
+                Log.d(TAG, "onActivityResult: Attachment File Name - " + attachmentFileName);
             }
         }
     }
 
+
     @SuppressLint("Range")
-    private String getAttachmentFileName(Uri attachmentUri) {
-        String attachmentFileName = "";
-        String uriString = attachmentUri.toString();
-        File myFile = new File(uriString);
-        if (uriString.startsWith("content://")) {
-            try (Cursor cursor = getContentResolver().query(attachmentUri, null, null, null, null)) {
+    private String getAttachmentFileName(Uri uri) {
+        String displayName = null;
+        Log.d(TAG, "getAttachmentFileName: URI - " + uri.toString());
+        if (uri.getScheme().equals("content")) {
+            try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    attachmentFileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    Log.d(TAG, "getAttachmentFileName: Display Name - " + displayName);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (uriString.startsWith("file://")) {
-            attachmentFileName = myFile.getName();
+        } else if (uri.getScheme().equals("file")) {
+            displayName = new File(uri.getPath()).getName();
+            Log.d(TAG, "getAttachmentFileName: File Name - " + displayName);
         }
-        return attachmentFileName;
+        return displayName;
     }
+
 
     private void showDatePicker() {
         int year = calendar.get(Calendar.YEAR);
