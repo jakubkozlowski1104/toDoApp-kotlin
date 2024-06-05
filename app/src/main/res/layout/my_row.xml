@@ -40,7 +40,7 @@
                 android:layout_marginStart="34dp"
                 android:text="Wynieść śmieci"
                 android:textColor="@color/black"
-                android:textSize="22dp"
+                android:textSize="18dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
