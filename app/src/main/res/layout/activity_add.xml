@@ -58,13 +58,32 @@
         app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
     <Button
+        android:id="@+id/attachment_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Add Attachment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/attchmentInfo" />
+
+    <Button
         android:id="@+id/addTask_button"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginTop="40dp"
-        android:text="Add"
+        android:text="ADD TASK"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/execution_input" />
+        app:layout_constraintTop_toBottomOf="@+id/attachment_button" />
+
+    <TextView
+        android:id="@+id/attchmentInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Attachment info"
+        app:layout_constraintTop_toBottomOf="@+id/execution_input"
+        tools:layout_editor_absoluteX="128dp"
+        tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>

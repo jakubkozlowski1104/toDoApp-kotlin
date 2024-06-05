@@ -54,7 +54,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void addTask(String title, String description, Category category, long execution_at) {
+    void addTask(String title, String description, Category category, long execution_at, String attachmentPath) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_TITLE, title);
@@ -65,12 +65,19 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_CREATED_AT, currentTimeMillis);
         cv.put(COLUMN_STATUS, 0);
         cv.put(COLUMN_NOTIFICATION, 0);
+        // Dodajemy ścieżkę załącznika do bazy danych, jeśli została wybrana
+        if (attachmentPath != null) {
+            cv.put(COLUMN_ATTACHMENT_PATH, attachmentPath);
+        }
         long result = db.insert(TABLE_NAME, null, cv);
         if (result == -1) {
             Toast.makeText(context, "Failed to add", Toast.LENGTH_SHORT).show();
         } else {
+            Toast.makeText(context, "Task added successfully", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     // In MyDatabaseHelper
     Cursor readAllData(String searchText) {
