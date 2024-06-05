@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     SearchView searchView;
     CheckBox sortByTimeCheckBox;
-    ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at;
+    ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at, attachment_path;
     CustomAdapter customAdapter;
     SharedPreferences sharedPreferences;
 
@@ -90,7 +90,8 @@ public class MainActivity extends AppCompatActivity {
         category = new ArrayList<>();
         execution_date = new ArrayList<>();
         task_status = new ArrayList<>();
-        created_at = new ArrayList<>(); // Initialize created_at
+        created_at = new ArrayList<>();
+        attachment_path = new ArrayList<>(); // Initialize attachment_path
 
         sharedPreferences = getSharedPreferences("SettingsPreferences", MODE_PRIVATE);
         storeDataInArrays(""); // Initial data fetch without filtering
@@ -105,11 +106,13 @@ public class MainActivity extends AppCompatActivity {
                 execution_date,
                 task_status,
                 created_at,
+                attachment_path, // Add this parameter
                 myDb
         );
 
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
     }
 
     @Override
@@ -139,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
             int columnIndexExecutionDate = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DUE_AT);
             int columnIndexStatus = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_STATUS);
             int columnIndexCreatedAt = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CREATED_AT);
+            int columnIndexAttachment = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_ATTACHMENT_PATH);
 
             task_id.clear();
             title.clear();
@@ -147,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
             execution_date.clear();
             task_status.clear();
             created_at.clear();
+            attachment_path.clear(); // Clear attachment_path
 
             while (cursor.moveToNext()) {
                 task_id.add(cursor.getString(columnIndexID));
@@ -156,9 +161,12 @@ public class MainActivity extends AppCompatActivity {
                 execution_date.add(cursor.getString(columnIndexExecutionDate));
                 task_status.add(cursor.getString(columnIndexStatus));
                 created_at.add(cursor.getString(columnIndexCreatedAt));
+                attachment_path.add(cursor.getString(columnIndexAttachment)); // Add attachment_path
             }
         }
     }
+
+
 
     void refreshData() {
         storeDataInArrays(""); // Refresh data without filtering

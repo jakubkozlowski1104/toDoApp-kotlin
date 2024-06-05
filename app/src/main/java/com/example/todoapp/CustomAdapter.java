@@ -37,15 +37,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     private Context context;
     private ArrayList<String> originalTask_id, originalTitle, originalDescription, originalCategory, originalExecution_date, originalTask_status, originalCreated_at;
     private ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at;
+    private ArrayList<String> attachment_path, originalAttachment_path;
     private MyDatabaseHelper myDb;
-    Button showNotifyButton;
-    private Context mContext;
 
-    public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, ArrayList<String> created_at, MyDatabaseHelper myDb) {
+    public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, ArrayList<String> created_at, ArrayList<String> attachment_path, MyDatabaseHelper myDb) {
         this.activity = activity;
-        this.mContext = context;
-        this.activity = activity;
-        this.context = context;
+        this.context = context != null ? context : activity.getApplicationContext(); // Ensure context is not null
         this.originalTask_id = new ArrayList<>(task_id);
         this.originalTitle = new ArrayList<>(title);
         this.originalDescription = new ArrayList<>(description);
@@ -53,6 +50,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         this.originalExecution_date = new ArrayList<>(execution_date);
         this.originalTask_status = new ArrayList<>(task_status);
         this.originalCreated_at = new ArrayList<>(created_at);
+        this.originalAttachment_path = new ArrayList<>(attachment_path);
         this.task_id = task_id;
         this.title = title;
         this.description = description;
@@ -60,6 +58,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         this.execution_date = execution_date;
         this.task_status = task_status;
         this.created_at = created_at;
+        this.attachment_path = attachment_path;
         this.myDb = myDb;
     }
 
@@ -103,6 +102,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             });
         }
 
+        if (attachment_path != null && position < attachment_path.size() && attachment_path.get(position) != null) {
+            holder.attachmentInfoSingleTask.setText(attachment_path.get(position));
+        } else {
+            holder.attachmentInfoSingleTask.setText("No attachment");
+        }
+
         holder.showNotifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,11 +115,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 String taskTitle = title.get(currentPosition);
 
                 // Uruchom usługę powiadomień używając kontekstu z MainActivity
-                Intent notificationIntent = new Intent(mContext, NotificationService.class);
+                Intent notificationIntent = new Intent(context, NotificationService.class);
                 notificationIntent.putExtra("taskTitle", taskTitle);
                 notificationIntent.putExtra("executionTimeMillis", Long.parseLong(execution_date.get(position)));
-                mContext.startService(notificationIntent);
-
+                context.startService(notificationIntent);
             }
         });
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
@@ -126,6 +130,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 intent.putExtra("description", description.get(position));
                 intent.putExtra("category", category.get(position));
                 intent.putExtra("execution_date", execution_date.get(position));
+                intent.putExtra("attachment_path", attachment_path.get(position)); // Przekaż ścieżkę załącznika
                 activity.startActivityForResult(intent, 1);
             }
         });
@@ -197,7 +202,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView title_txt, category_txt, description_txt, execution_date_txt, showCreatedDate, showStatus;
+        TextView title_txt, category_txt, description_txt, execution_date_txt, showCreatedDate, attachmentInfoSingleTask;
         CheckBox checkBox;
         LinearLayout mainLayout;
         Button showNotifyButton;
@@ -212,8 +217,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             checkBox = itemView.findViewById(R.id.checkBox);
             mainLayout = itemView.findViewById(R.id.mainLayout);
             showNotifyButton = itemView.findViewById(R.id.showNotify);
+            attachmentInfoSingleTask = itemView.findViewById(R.id.attachemntInfoSigleTask); // Dodaj to pole
         }
     }
 }
-
-
