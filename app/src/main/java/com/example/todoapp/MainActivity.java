@@ -78,12 +78,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        add_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddActivity.class);
-                startActivity(intent);
-            }
+        add_button.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, AddActivity.class);
+            startActivity(intent);
         });
 
         myDb = new MyDatabaseHelper(MainActivity.this);
