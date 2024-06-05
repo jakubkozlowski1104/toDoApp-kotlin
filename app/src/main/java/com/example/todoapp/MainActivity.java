@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         sortByTimeCheckBox = findViewById(R.id.sortByTimeCheckBox);
         categorySpinner = findViewById(R.id.spinner3);
+        searchView = findViewById(R.id.searchView);
 
         sortByTimeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -134,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-
     }
 
     @Override
