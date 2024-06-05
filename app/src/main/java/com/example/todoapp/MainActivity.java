@@ -49,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         add_button = findViewById(R.id.add_button);
         settingsButton = findViewById(R.id.settingsButton);
+        searchView = findViewById(R.id.searchView);
 
         sortByTimeCheckBox = findViewById(R.id.sortByTimeCheckBox);
         categorySpinner = findViewById(R.id.spinner3);
-        searchView = findViewById(R.id.searchView);
 
         sortByTimeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -77,8 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                storeDataInArrays(newText); // Update data based on search results
-                customAdapter.filter(newText, categorySpinner.getSelectedItem().toString());
+                refreshData();
                 return false;
             }
         });
@@ -117,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         attachment_path = new ArrayList<>(); // Initialize attachment_path
 
         sharedPreferences = getSharedPreferences("SettingsPreferences", MODE_PRIVATE);
-        storeDataInArrays(""); // Initial data fetch without filtering
+        refreshData(); // Initial data fetch
 
         customAdapter = new CustomAdapter(
                 MainActivity.this,
@@ -145,10 +144,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void storeDataInArrays(String searchText) {
+    void storeDataInArrays(String searchText, String selectedCategory) {
         boolean hideTasks = sharedPreferences.getBoolean("hideTasks", false);
         Cursor cursor;
-        String selectedCategory = categorySpinner.getSelectedItem().toString();
         if (selectedCategory.equals("All")) {
             if (sortByTimeCheckBox.isChecked()) {
                 cursor = hideTasks ? myDb.readUnfinishedTasksSortedByTime(searchText) : myDb.readAllDataSortedByTime(searchText);
@@ -163,18 +161,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (cursor.getCount() == 0) {
+        if (cursor != null && cursor.getCount() == 0) {
             Toast.makeText(this, "Brak danych", Toast.LENGTH_SHORT).show();
         } else {
-            int columnIndexID = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_ID);
-            int columnIndexTitle = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_TITLE);
-            int columnIndexDescription = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DESCRIPTION);
-            int columnIndexCategory = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CATEGORY);
-            int columnIndexExecutionDate = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DUE_AT);
-            int columnIndexStatus = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_STATUS);
-            int columnIndexCreatedAt = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CREATED_AT);
-            int columnIndexAttachment = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_ATTACHMENT_PATH);
-
             task_id.clear();
             title.clear();
             description.clear();
@@ -184,21 +173,34 @@ public class MainActivity extends AppCompatActivity {
             created_at.clear();
             attachment_path.clear(); // Clear attachment_path
 
-            while (cursor.moveToNext()) {
-                task_id.add(cursor.getString(columnIndexID));
-                title.add(cursor.getString(columnIndexTitle));
-                description.add(cursor.getString(columnIndexDescription));
-                category.add(cursor.getString(columnIndexCategory));
-                execution_date.add(cursor.getString(columnIndexExecutionDate));
-                task_status.add(cursor.getString(columnIndexStatus));
-                created_at.add(cursor.getString(columnIndexCreatedAt));
-                attachment_path.add(cursor.getString(columnIndexAttachment)); // Add attachment_path
+            if (cursor != null) {
+                int columnIndexID = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_ID);
+                int columnIndexTitle = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_TITLE);
+                int columnIndexDescription = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DESCRIPTION);
+                int columnIndexCategory = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CATEGORY);
+                int columnIndexExecutionDate = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DUE_AT);
+                int columnIndexStatus = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_STATUS);
+                int columnIndexCreatedAt = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CREATED_AT);
+                int columnIndexAttachment = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_ATTACHMENT_PATH);
+
+                while (cursor.moveToNext()) {
+                    task_id.add(cursor.getString(columnIndexID));
+                    title.add(cursor.getString(columnIndexTitle));
+                    description.add(cursor.getString(columnIndexDescription));
+                    category.add(cursor.getString(columnIndexCategory));
+                    execution_date.add(cursor.getString(columnIndexExecutionDate));
+                    task_status.add(cursor.getString(columnIndexStatus));
+                    created_at.add(cursor.getString(columnIndexCreatedAt));
+                    attachment_path.add(cursor.getString(columnIndexAttachment)); // Add attachment_path
+                }
             }
         }
     }
 
     void refreshData() {
-        storeDataInArrays(searchView.getQuery().toString()); // Refresh data with current search text
+        String searchText = searchView.getQuery().toString();
+        String selectedCategory = categorySpinner.getSelectedItem().toString();
+        storeDataInArrays(searchText, selectedCategory); // Refresh data with current search text and category
         customAdapter.notifyDataSetChanged();
     }
 
