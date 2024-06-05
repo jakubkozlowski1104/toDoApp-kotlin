@@ -6,10 +6,13 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     SearchView searchView;
     CheckBox sortByTimeCheckBox;
+    Spinner categorySpinner;
     ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at, attachment_path;
     CustomAdapter customAdapter;
     SharedPreferences sharedPreferences;
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         settingsButton = findViewById(R.id.settingsButton);
 
         sortByTimeCheckBox = findViewById(R.id.sortByTimeCheckBox);
+        categorySpinner = findViewById(R.id.spinner3);
 
         sortByTimeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -63,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        searchView = findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -73,8 +77,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 storeDataInArrays(newText); // Update data based on search results
-                customAdapter.filter(newText);
+                customAdapter.filter(newText, categorySpinner.getSelectedItem().toString());
                 return false;
+            }
+        });
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.sort_category, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(adapter);
+        categorySpinner.setSelection(adapter.getPosition("All"));
+
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                refreshData();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
             }
         });
 
@@ -126,10 +148,19 @@ public class MainActivity extends AppCompatActivity {
     void storeDataInArrays(String searchText) {
         boolean hideTasks = sharedPreferences.getBoolean("hideTasks", false);
         Cursor cursor;
-        if (sortByTimeCheckBox.isChecked()) {
-            cursor = hideTasks ? myDb.readUnfinishedTasksSortedByTime(searchText) : myDb.readAllDataSortedByTime(searchText);
+        String selectedCategory = categorySpinner.getSelectedItem().toString();
+        if (selectedCategory.equals("All")) {
+            if (sortByTimeCheckBox.isChecked()) {
+                cursor = hideTasks ? myDb.readUnfinishedTasksSortedByTime(searchText) : myDb.readAllDataSortedByTime(searchText);
+            } else {
+                cursor = hideTasks ? myDb.readUnfinishedTasks(searchText) : myDb.readAllData(searchText);
+            }
         } else {
-            cursor = hideTasks ? myDb.readUnfinishedTasks(searchText) : myDb.readAllData(searchText);
+            if (sortByTimeCheckBox.isChecked()) {
+                cursor = hideTasks ? myDb.readUnfinishedTasksByCategorySortedByTime(searchText, selectedCategory) : myDb.readAllDataByCategorySortedByTime(searchText, selectedCategory);
+            } else {
+                cursor = hideTasks ? myDb.readUnfinishedTasksByCategory(searchText, selectedCategory) : myDb.readAllDataByCategory(searchText, selectedCategory);
+            }
         }
 
         if (cursor.getCount() == 0) {
@@ -166,10 +197,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
     void refreshData() {
-        storeDataInArrays(""); // Refresh data without filtering
+        storeDataInArrays(searchView.getQuery().toString()); // Refresh data with current search text
         customAdapter.notifyDataSetChanged();
     }
 

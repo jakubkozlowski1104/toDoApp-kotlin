@@ -8,29 +8,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
 
@@ -41,6 +30,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     private ArrayList<String> attachment_path, originalAttachment_path;
     private MyDatabaseHelper myDb;
     private static final String TAG = "checkAttach";
+
     public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, ArrayList<String> created_at, ArrayList<String> attachment_path, MyDatabaseHelper myDb) {
         this.activity = activity;
         this.context = context != null ? context : activity.getApplicationContext(); // Ensure context is not null
@@ -111,7 +101,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             Log.d(TAG, "onBindViewHolder: No attachment");
         }
 
-
         holder.showNotifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +114,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 context.startService(notificationIntent);
             }
         });
+
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,58 +140,45 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         return sdf.format(new Date(millis));
     }
 
-    public void filter(String text) {
-        if (text.isEmpty()) {
-            task_id.clear();
-            title.clear();
-            description.clear();
-            category.clear();
-            execution_date.clear();
-            task_status.clear();
-            created_at.clear();
-            task_id.addAll(originalTask_id);
-            title.addAll(originalTitle);
-            description.addAll(originalDescription);
-            category.addAll(originalCategory);
-            execution_date.addAll(originalExecution_date);
-            task_status.addAll(originalTask_status);
-            created_at.addAll(originalCreated_at);
-        } else {
-            ArrayList<String> filteredIds = new ArrayList<>();
-            ArrayList<String> filteredTitles = new ArrayList<>();
-            ArrayList<String> filteredDescriptions = new ArrayList<>();
-            ArrayList<String> filteredCategories = new ArrayList<>();
-            ArrayList<String> filteredExecutionDates = new ArrayList<>();
-            ArrayList<String> filteredTaskStatus = new ArrayList<>();
-            ArrayList<String> filteredCreatedAt = new ArrayList<>();
+    public void filter(String text, String category) {
+        ArrayList<String> filteredIds = new ArrayList<>();
+        ArrayList<String> filteredTitles = new ArrayList<>();
+        ArrayList<String> filteredDescriptions = new ArrayList<>();
+        ArrayList<String> filteredCategories = new ArrayList<>();
+        ArrayList<String> filteredExecutionDates = new ArrayList<>();
+        ArrayList<String> filteredTaskStatus = new ArrayList<>();
+        ArrayList<String> filteredCreatedAt = new ArrayList<>();
 
-            for (int i = 0; i < title.size(); i++) {
-                if (title.get(i).toLowerCase().contains(text.toLowerCase())) {
-                    filteredIds.add(task_id.get(i));
-                    filteredTitles.add(title.get(i));
-                    filteredDescriptions.add(description.get(i));
-                    filteredCategories.add(category.get(i));
-                    filteredExecutionDates.add(execution_date.get(i));
-                    filteredTaskStatus.add(task_status.get(i));
-                    filteredCreatedAt.add(created_at.get(i));
-                }
+        for (int i = 0; i < originalTitle.size(); i++) {
+            boolean matchesText = originalTitle.get(i).toLowerCase().contains(text.toLowerCase());
+            boolean matchesCategory = category.equals("All") || originalCategory.get(i).equalsIgnoreCase(category);
+
+            if (matchesText && matchesCategory) {
+                filteredIds.add(originalTask_id.get(i));
+                filteredTitles.add(originalTitle.get(i));
+                filteredDescriptions.add(originalDescription.get(i));
+                filteredCategories.add(originalCategory.get(i));
+                filteredExecutionDates.add(originalExecution_date.get(i));
+                filteredTaskStatus.add(originalTask_status.get(i));
+                filteredCreatedAt.add(originalCreated_at.get(i));
             }
-
-            task_id.clear();
-            title.clear();
-            description.clear();
-            category.clear();
-            execution_date.clear();
-            task_status.clear();
-            created_at.clear();
-            task_id.addAll(filteredIds);
-            title.addAll(filteredTitles);
-            description.addAll(filteredDescriptions);
-            category.addAll(filteredCategories);
-            execution_date.addAll(filteredExecutionDates);
-            task_status.addAll(filteredTaskStatus);
-            created_at.addAll(filteredCreatedAt);
         }
+
+        task_id.clear();
+        title.clear();
+        description.clear();
+        this.category.clear();
+        execution_date.clear();
+        task_status.clear();
+        created_at.clear();
+        task_id.addAll(filteredIds);
+        title.addAll(filteredTitles);
+        description.addAll(filteredDescriptions);
+        this.category.addAll(filteredCategories);
+        execution_date.addAll(filteredExecutionDates);
+        task_status.addAll(filteredTaskStatus);
+        created_at.addAll(filteredCreatedAt);
+
         notifyDataSetChanged();
     }
 

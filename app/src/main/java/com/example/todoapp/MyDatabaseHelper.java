@@ -76,9 +76,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-
-
-    // In MyDatabaseHelper
     Cursor readAllData(String searchText) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TITLE + " LIKE '%" + searchText + "%'";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -103,7 +100,29 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return db != null ? db.rawQuery(query, null) : null;
     }
 
+    Cursor readAllDataByCategory(String searchText, String category) {
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_CATEGORY + " = '" + category + "' AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db != null ? db.rawQuery(query, null) : null;
+    }
 
+    Cursor readUnfinishedTasksByCategory(String searchText, String category) {
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0 AND " + COLUMN_CATEGORY + " = '" + category + "' AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db != null ? db.rawQuery(query, null) : null;
+    }
+
+    Cursor readAllDataByCategorySortedByTime(String searchText, String category) {
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_CATEGORY + " = '" + category + "' AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%' ORDER BY " + COLUMN_DUE_AT + " ASC";
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db != null ? db.rawQuery(query, null) : null;
+    }
+
+    Cursor readUnfinishedTasksByCategorySortedByTime(String searchText, String category) {
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0 AND " + COLUMN_CATEGORY + " = '" + category + "' AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%' ORDER BY " + COLUMN_DUE_AT + " ASC";
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db != null ? db.rawQuery(query, null) : null;
+    }
 
     void updateData(String row_id, String title, String category, String description, long execution_date) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -130,8 +149,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "Failed to update task status", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     void deleteOneRow(String row_id) {
         SQLiteDatabase db = this.getWritableDatabase();
