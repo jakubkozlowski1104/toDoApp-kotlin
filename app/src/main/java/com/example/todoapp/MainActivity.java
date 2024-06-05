@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,6 +27,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MyDatabaseHelperCheck";
 
     RecyclerView recyclerView;
     FloatingActionButton add_button;
@@ -116,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
         attachment_path = new ArrayList<>(); // Initialize attachment_path
 
         sharedPreferences = getSharedPreferences("SettingsPreferences", MODE_PRIVATE);
-        refreshData(); // Initial data fetch
 
         customAdapter = new CustomAdapter(
                 MainActivity.this,
@@ -134,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+        refreshData(); // Initial data fetch
     }
 
     @Override
@@ -162,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (cursor != null && cursor.getCount() == 0) {
+            Log.d(TAG, "No data found for category: " + selectedCategory + " and searchText: " + searchText);
             Toast.makeText(this, "Brak danych", Toast.LENGTH_SHORT).show();
         } else {
             task_id.clear();
@@ -193,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
                     created_at.add(cursor.getString(columnIndexCreatedAt));
                     attachment_path.add(cursor.getString(columnIndexAttachment)); // Add attachment_path
                 }
+                cursor.close(); // Close the cursor
             }
         }
     }
