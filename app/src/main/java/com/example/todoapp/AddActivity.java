@@ -34,7 +34,6 @@ public class AddActivity extends AppCompatActivity {
     private Calendar calendar;
     private static final int PICK_FILE_REQUEST_CODE = 1001;
     private Uri attachmentUri;
-    private static final String TAG = "checkAttach";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +74,7 @@ public class AddActivity extends AppCompatActivity {
                 if (!title.isEmpty() && !description.isEmpty() && executionDateMillis != -1) {
                     String attachmentFileName = attachmentUri != null ? getAttachmentFileName(attachmentUri) : null;
                     MyDatabaseHelper dbHelper = new MyDatabaseHelper(AddActivity.this);
-                    dbHelper.addTask(title, description, Category.valueOf(category), executionDateMillis, attachmentFileName); // Zaktualizuj metodę, aby przekazać nazwę pliku
+                    dbHelper.addTask(title, description, Category.valueOf(category), executionDateMillis, attachmentFileName);
                     Toast.makeText(AddActivity.this, "Task added successfully", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
@@ -87,8 +86,8 @@ public class AddActivity extends AppCompatActivity {
 
     private void pickAttachment() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
+        intent.setType("*/*"); //dowolny typ pliku
+        startActivityForResult(intent, PICK_FILE_REQUEST_CODE); // kod 1001
     }
 
     @Override
@@ -99,28 +98,23 @@ public class AddActivity extends AppCompatActivity {
             if (attachmentUri != null) {
                 String attachmentFileName = getAttachmentFileName(attachmentUri);
                 attachmentInfo.setText(attachmentFileName);
-                Log.d(TAG, "onActivityResult: Attachment File Name - " + attachmentFileName);
             }
         }
     }
 
-
     @SuppressLint("Range")
     private String getAttachmentFileName(Uri uri) {
         String displayName = null;
-        Log.d(TAG, "getAttachmentFileName: URI - " + uri.toString());
         if (uri.getScheme().equals("content")) {
             try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
                     displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                    Log.d(TAG, "getAttachmentFileName: Display Name - " + displayName);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (uri.getScheme().equals("file")) {
             displayName = new File(uri.getPath()).getName();
-            Log.d(TAG, "getAttachmentFileName: File Name - " + displayName);
         }
         return displayName;
     }

@@ -29,11 +29,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     private ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at;
     private ArrayList<String> attachment_path, originalAttachment_path;
     private MyDatabaseHelper myDb;
-    private static final String TAG = "checkAttach";
 
     public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, ArrayList<String> created_at, ArrayList<String> attachment_path, MyDatabaseHelper myDb) {
         this.activity = activity;
-        this.context = context != null ? context : activity.getApplicationContext(); // Ensure context is not null
+        this.context = context != null ? context : activity.getApplicationContext();
         this.originalTask_id = new ArrayList<>(task_id);
         this.originalTitle = new ArrayList<>(title);
         this.originalDescription = new ArrayList<>(description);
@@ -69,13 +68,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         if (execution_date != null && position < execution_date.size() && execution_date.get(position) != null) {
             holder.execution_date_txt.setText(convertMillisToDate(Long.parseLong(execution_date.get(position))));
         } else {
-            holder.execution_date_txt.setText("N/A");
+            holder.execution_date_txt.setText("no date");
         }
 
         if (created_at != null && position < created_at.size() && created_at.get(position) != null) {
             holder.showCreatedDate.setText("Created at: " + convertMillisToDate(Long.parseLong(created_at.get(position))));
         } else {
-            holder.showCreatedDate.setText("Created at: N/A");
+            holder.showCreatedDate.setText("Created at: no date");
         }
 
         if (task_status != null && position < task_status.size()) {
@@ -95,10 +94,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
         if (attachment_path != null && position < attachment_path.size() && attachment_path.get(position) != null) {
             holder.attachmentInfoSingleTask.setText(attachment_path.get(position));
-            Log.d(TAG, "onBindViewHolder: Attachment Path - " + attachment_path.get(position));
         } else {
             holder.attachmentInfoSingleTask.setText("No attachment");
-            Log.d(TAG, "onBindViewHolder: No attachment");
         }
 
         holder.showNotifyButton.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +104,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 int currentPosition = holder.getAdapterPosition();
                 String taskTitle = title.get(currentPosition);
 
-                // Uruchom usługę powiadomień używając kontekstu z MainActivity
                 Intent notificationIntent = new Intent(context, NotificationService.class);
                 notificationIntent.putExtra("taskTitle", taskTitle);
                 notificationIntent.putExtra("executionTimeMillis", Long.parseLong(execution_date.get(position)));
@@ -124,7 +120,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 intent.putExtra("description", description.get(position));
                 intent.putExtra("category", category.get(position));
                 intent.putExtra("execution_date", execution_date.get(position));
-                intent.putExtra("attachment_path", attachment_path.get(position)); // Przekaż ścieżkę załącznika
+                intent.putExtra("attachment_path", attachment_path.get(position));
                 activity.startActivityForResult(intent, 1);
             }
         });
@@ -198,7 +194,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             checkBox = itemView.findViewById(R.id.checkBox);
             mainLayout = itemView.findViewById(R.id.mainLayout);
             showNotifyButton = itemView.findViewById(R.id.showNotify);
-            attachmentInfoSingleTask = itemView.findViewById(R.id.attachemntInfoSigleTask); // Dodaj to pole
+            attachmentInfoSingleTask = itemView.findViewById(R.id.attachemntInfoSigleTask);
         }
     }
 }

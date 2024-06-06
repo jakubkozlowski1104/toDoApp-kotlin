@@ -27,18 +27,13 @@ public class NotificationService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d("NotificationServiceCheck", "Handling intent");
 
-        // Pobierz nazwę zadania i czas wykonania z intentu
         String taskTitle = intent.getStringExtra("taskTitle");
         long executionTimeMillis = intent.getLongExtra("executionTimeMillis", -1);
-
-        // Utwórz kanał powiadomień dla nowszych wersji Androida
         createNotificationChannel();
 
         Log.d("NotificationServiceCheck", "Creating notification");
 
-        // Sprawdź, czy czas wykonania zadania już minął
         if (executionTimeMillis < System.currentTimeMillis()) {
-            // Jeśli tak, wyświetl powiadomienie informujące, że czas minął
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle("Powiadomienie")
                     .setContentText("Czas na wykonanie zadania: \"" + taskTitle + "\" MINĄŁ!")
@@ -48,13 +43,11 @@ public class NotificationService extends IntentService {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.notify(NOTIFICATION_ID, notification);
         } else {
-            // W przeciwnym razie oblicz czas do zakończenia zadania
             long timeDiffMillis = executionTimeMillis - System.currentTimeMillis();
             long days = timeDiffMillis / (1000 * 60 * 60 * 24);
             long hours = (timeDiffMillis % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
             long minutes = (timeDiffMillis % (1000 * 60 * 60)) / (1000 * 60);
 
-            // Utwórz tekst do wyświetlenia w powiadomieniu
             String timeLeft = "";
             Log.d("NotificationServiceCheck", "Dodano dni do timeLeft: " + days);
             if (days > 0) {
@@ -63,19 +56,15 @@ public class NotificationService extends IntentService {
             }
             timeLeft += hours + " godzin, " + minutes + " minut";
 
-            // Utwórz powiadomienie
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle("Powiadomienie")
                     .setContentText("Do zakończenia zadania \"" + taskTitle + "\" pozostało: " + timeLeft)
                     .setSmallIcon(R.drawable.ic_add)
                     .build();
-
-            // Wyświetl powiadomienie
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.notify(NOTIFICATION_ID, notification);
         }
     }
-
 
     private void createNotificationChannel() {
         Log.d("NotificationService", "Creating notification channel");
@@ -85,7 +74,6 @@ public class NotificationService extends IntentService {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
-
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
