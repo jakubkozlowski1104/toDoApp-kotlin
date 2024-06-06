@@ -40,7 +40,7 @@
                 android:layout_marginStart="34dp"
                 android:text="Wynieść śmieci"
                 android:textColor="@color/black"
-                android:textSize="22dp"
+                android:textSize="18dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -85,11 +85,13 @@
                 app:layout_constraintEnd_toStartOf="@+id/taskDescription"
                 app:layout_constraintTop_toTopOf="@+id/taskTitle" />
 
-            <TextView
-                android:id="@+id/showStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
+            <Button
+                android:id="@+id/showNotify"
+                android:layout_width="95dp"
+                android:layout_height="35dp"
+                android:text="notify"
+                android:textSize="10dp"
+                app:layout_constraintEnd_toEndOf="@+id/showCreatedDate"
                 app:layout_constraintStart_toEndOf="@+id/taskDescription"
                 app:layout_constraintTop_toBottomOf="@+id/taskTitle" />
 
@@ -100,7 +102,17 @@
                 android:text="created at: 24.05.2025"
                 android:textSize="10dp"
                 app:layout_constraintStart_toEndOf="@+id/taskDescription"
-                app:layout_constraintTop_toBottomOf="@+id/showStatus" />
+                app:layout_constraintTop_toBottomOf="@+id/showNotify" />
+
+            <TextView
+                android:id="@+id/attachemntInfoSigleTask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="12dp"
+                android:text="No attachment"
+                app:layout_constraintStart_toEndOf="@+id/checkBox"
+                app:layout_constraintTop_toBottomOf="@+id/taskDescription" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

@@ -16,21 +16,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Spinner
-        android:id="@+id/sortCategorySpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/hideTasksSwitch"
-        tools:layout_editor_absoluteX="1dp"
-        tools:ignore="MissingConstraints" />
 
     <Spinner
         android:id="@+id/pickTimeNotificationsSpinner"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/sortCategorySpinner"
-        tools:layout_editor_absoluteX="1dp"
+        android:entries="@array/time_notify"
+        app:layout_constraintEnd_toEndOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
         tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Pick notification time"
+        app:layout_constraintEnd_toEndOf="@+id/hideTasksSwitch"
+        app:layout_constraintStart_toStartOf="@+id/hideTasksSwitch"
+        app:layout_constraintTop_toBottomOf="@+id/hideTasksSwitch" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:text="SETTINGS"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hideTasksSwitch"
+        app:layout_constraintEnd_toEndOf="@+id/hideTasksSwitch"
+        app:layout_constraintStart_toStartOf="@+id/hideTasksSwitch" />
 </androidx.constraintlayout.widget.ConstraintLayout>

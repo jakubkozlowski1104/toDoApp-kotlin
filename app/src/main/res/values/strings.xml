@@ -6,4 +6,18 @@
         <item>Shopping</item>
         <item>Other</item>
     </string-array>
+    <string-array name="sort_category">
+        <item>All</item>
+        <item>Work</item>
+        <item>Home</item>
+        <item>Shopping</item>
+        <item>Other</item>
+    </string-array>
+    <string-array name="time_notify">
+        <item>1 min</item>
+        <item>5 min</item>
+        <item>10 min</item>
+        <item>30 min</item>
+        <item>60 min</item>
+    </string-array>
 </resources>

@@ -5,11 +5,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -28,10 +32,10 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton add_button;
     MyDatabaseHelper myDb;
     Button settingsButton;
-
     SearchView searchView;
     CheckBox sortByTimeCheckBox;
-    ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at;
+    Spinner categorySpinner;
+    ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at, attachment_path;
     CustomAdapter customAdapter;
     SharedPreferences sharedPreferences;
 
@@ -45,25 +49,18 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         add_button = findViewById(R.id.add_button);
         settingsButton = findViewById(R.id.settingsButton);
+        searchView = findViewById(R.id.searchView);
 
         sortByTimeCheckBox = findViewById(R.id.sortByTimeCheckBox);
+        categorySpinner = findViewById(R.id.spinner3);
 
-        sortByTimeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                refreshData();
-            }
+        sortByTimeCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> refreshData());
+
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
         });
 
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        searchView = findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -72,18 +69,31 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                storeDataInArrays(newText); // Update data based on search results
-                customAdapter.filter(newText);
+                refreshData();
                 return false;
             }
         });
 
-        add_button.setOnClickListener(new View.OnClickListener() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.sort_category, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(adapter);
+        categorySpinner.setSelection(adapter.getPosition("All"));
+
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddActivity.class);
-                startActivity(intent);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                refreshData();
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        add_button.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, AddActivity.class);
+            startActivity(intent);
         });
 
         myDb = new MyDatabaseHelper(MainActivity.this);
@@ -93,10 +103,10 @@ public class MainActivity extends AppCompatActivity {
         category = new ArrayList<>();
         execution_date = new ArrayList<>();
         task_status = new ArrayList<>();
-        created_at = new ArrayList<>(); // Initialize created_at
+        created_at = new ArrayList<>();
+        attachment_path = new ArrayList<>();
 
         sharedPreferences = getSharedPreferences("SettingsPreferences", MODE_PRIVATE);
-        storeDataInArrays(""); // Initial data fetch without filtering
 
         customAdapter = new CustomAdapter(
                 MainActivity.this,
@@ -108,41 +118,36 @@ public class MainActivity extends AppCompatActivity {
                 execution_date,
                 task_status,
                 created_at,
+                attachment_path,
                 myDb
         );
 
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+        refreshData();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            refreshData();
-        }
-    }
-
-    void storeDataInArrays(String searchText) {
+    void storeDataInArrays(String searchText, String selectedCategory) {
         boolean hideTasks = sharedPreferences.getBoolean("hideTasks", false);
         Cursor cursor;
-        if (sortByTimeCheckBox.isChecked()) {
-            cursor = hideTasks ? myDb.readUnfinishedTasksSortedByTime(searchText) : myDb.readAllDataSortedByTime(searchText);
+        if (selectedCategory.equals("All")) {
+            if (sortByTimeCheckBox.isChecked()) {
+                cursor = hideTasks ? myDb.readUnfinishedTasksSortedByTime(searchText) : myDb.readAllDataSortedByTime(searchText);
+            } else {
+                cursor = hideTasks ? myDb.readUnfinishedTasks(searchText) : myDb.readAllData(searchText);
+            }
         } else {
-            cursor = hideTasks ? myDb.readUnfinishedTasks(searchText) : myDb.readAllData(searchText);
+            if (sortByTimeCheckBox.isChecked()) {
+                cursor = hideTasks ? myDb.readUnfinishedTasksByCategorySortedByTime(searchText, selectedCategory) : myDb.readAllDataByCategorySortedByTime(searchText, selectedCategory);
+            } else {
+                cursor = hideTasks ? myDb.readUnfinishedTasksByCategory(searchText, selectedCategory) : myDb.readAllDataByCategory(searchText, selectedCategory);
+            }
         }
 
-        if (cursor.getCount() == 0) {
+        if (cursor != null && cursor.getCount() == 0) {
             Toast.makeText(this, "Brak danych", Toast.LENGTH_SHORT).show();
         } else {
-            int columnIndexID = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_ID);
-            int columnIndexTitle = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_TITLE);
-            int columnIndexDescription = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DESCRIPTION);
-            int columnIndexCategory = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CATEGORY);
-            int columnIndexExecutionDate = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DUE_AT);
-            int columnIndexStatus = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_STATUS);
-            int columnIndexCreatedAt = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CREATED_AT);
-
             task_id.clear();
             title.clear();
             description.clear();
@@ -150,21 +155,37 @@ public class MainActivity extends AppCompatActivity {
             execution_date.clear();
             task_status.clear();
             created_at.clear();
+            attachment_path.clear();
 
-            while (cursor.moveToNext()) {
-                task_id.add(cursor.getString(columnIndexID));
-                title.add(cursor.getString(columnIndexTitle));
-                description.add(cursor.getString(columnIndexDescription));
-                category.add(cursor.getString(columnIndexCategory));
-                execution_date.add(cursor.getString(columnIndexExecutionDate));
-                task_status.add(cursor.getString(columnIndexStatus));
-                created_at.add(cursor.getString(columnIndexCreatedAt));
+            if (cursor != null) {
+                int columnIndexID = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_ID);
+                int columnIndexTitle = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_TITLE);
+                int columnIndexDescription = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DESCRIPTION);
+                int columnIndexCategory = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CATEGORY);
+                int columnIndexExecutionDate = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_DUE_AT);
+                int columnIndexStatus = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_STATUS);
+                int columnIndexCreatedAt = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_CREATED_AT);
+                int columnIndexAttachment = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_ATTACHMENT_PATH);
+
+                while (cursor.moveToNext()) {
+                    task_id.add(cursor.getString(columnIndexID));
+                    title.add(cursor.getString(columnIndexTitle));
+                    description.add(cursor.getString(columnIndexDescription));
+                    category.add(cursor.getString(columnIndexCategory));
+                    execution_date.add(cursor.getString(columnIndexExecutionDate));
+                    task_status.add(cursor.getString(columnIndexStatus));
+                    created_at.add(cursor.getString(columnIndexCreatedAt));
+                    attachment_path.add(cursor.getString(columnIndexAttachment));
+                }
+                cursor.close();
             }
         }
     }
 
     void refreshData() {
-        storeDataInArrays(""); // Refresh data without filtering
+        String searchText = searchView.getQuery().toString();
+        String selectedCategory = categorySpinner.getSelectedItem().toString();
+        storeDataInArrays(searchText, selectedCategory);
         customAdapter.notifyDataSetChanged();
     }
 
