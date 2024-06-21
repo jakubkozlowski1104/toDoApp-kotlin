@@ -3,9 +3,11 @@ package com.example.todoapp;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
@@ -27,8 +29,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
+import android.app.AlarmManager;
+import android.content.pm.PackageManager;
+import android.provider.Settings;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 public class AddActivity extends AppCompatActivity {
+    private static final int REQUEST_SCHEDULE_EXACT_ALARM = 1;
 
     private EditText titleInput, descriptionInput;
     private Spinner spinner;
@@ -43,6 +50,14 @@ public class AddActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                startActivityForResult(intent, REQUEST_SCHEDULE_EXACT_ALARM);
+            }
+        }
 
         titleInput = findViewById(R.id.title_input);
         descriptionInput = findViewById(R.id.description_input);
@@ -80,12 +95,20 @@ public class AddActivity extends AppCompatActivity {
                     MyDatabaseHelper dbHelper = new MyDatabaseHelper(AddActivity.this);
                     dbHelper.addTask(title, description, Category.valueOf(category), executionDateMillis, attachmentFileName);
                     Toast.makeText(AddActivity.this, "Task added successfully", Toast.LENGTH_SHORT).show();
+
+                    // Start NotificationService to set the alarm
+                    Intent notificationIntent = new Intent(AddActivity.this, NotificationService.class);
+                    notificationIntent.putExtra("taskTitle", title);
+                    notificationIntent.putExtra("executionTimeMillis", executionDateMillis);
+                    startService(notificationIntent);
+
                     finish();
                 } else {
                     Toast.makeText(AddActivity.this, "Please fill in all fields with correct date format", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
     }
 
     private void pickAttachment() {
@@ -97,6 +120,13 @@ public class AddActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SCHEDULE_EXACT_ALARM) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "Uprawnienia do dokładnych alarmów zostały przyznane", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Uprawnienia do dokładnych alarmów są wymagane", Toast.LENGTH_SHORT).show();
+            }
+        }
         if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
             attachmentUri = data.getData();
             if (attachmentUri != null) {

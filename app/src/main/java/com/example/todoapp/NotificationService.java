@@ -1,19 +1,19 @@
 package com.example.todoapp;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import androidx.core.content.ContextCompat;
 
 public class NotificationService extends IntentService {
     private static final String CHANNEL_ID = "TODO_APP_CHANNEL";
@@ -31,6 +31,12 @@ public class NotificationService extends IntentService {
         long executionTimeMillis = intent.getLongExtra("executionTimeMillis", -1);
 
         createNotificationChannel();
+
+        // Ustawienie alarmu 5 minut przed zakończeniem zadania
+        long alarmTime = executionTimeMillis - 5 * 60 * 1000;
+        if (alarmTime > System.currentTimeMillis()) {
+            setAlarm(alarmTime, taskTitle);
+        }
 
         Log.d("NotificationServiceCheck", "Creating notification");
 
@@ -53,7 +59,6 @@ public class NotificationService extends IntentService {
             Log.d("NotificationServiceCheck", "Dodano dni do timeLeft: " + days);
             if (days > 0) {
                 timeLeft += days + " dni, ";
-
             }
             timeLeft += hours + " godzin, " + minutes + " minut";
 
@@ -65,6 +70,26 @@ public class NotificationService extends IntentService {
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.notify(NOTIFICATION_ID, notification);
+        }
+    }
+
+    private void setAlarm(long alarmTime, String taskTitle) {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.putExtra("taskTitle", taskTitle);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED) {
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+                } else {
+                    Log.e("NotificationService", "Brak uprawnień do ustawienia dokładnych alarmów");
+                }
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+            }
         }
     }
 
