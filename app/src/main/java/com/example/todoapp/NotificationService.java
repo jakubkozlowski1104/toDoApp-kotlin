@@ -33,14 +33,11 @@ public class NotificationService extends IntentService {
 
         createNotificationChannel();
 
-        // Ustawienie alarmu 5 minut przed zakończeniem zadania
-        long alarmTime = executionTimeMillis - 5 * 60 * 1000;
+        // Ustawienie alarmu 1 minutę przed zakończeniem zadania
+        long alarmTime = executionTimeMillis - 1 * 60 * 1000;
         Log.d(TAG, "Execution time: " + executionTimeMillis + ", Alarm time: " + alarmTime);
-
         if (alarmTime > System.currentTimeMillis()) {
             setAlarm(alarmTime, taskTitle);
-        } else {
-            Log.d(TAG, "Alarm time is in the past, not setting an alarm.");
         }
 
         Log.d(TAG, "Creating notification");
@@ -79,7 +76,6 @@ public class NotificationService extends IntentService {
     }
 
     private void setAlarm(long alarmTime, String taskTitle) {
-        Log.d(TAG, "Setting alarm for task: " + taskTitle + " at " + alarmTime);
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("taskTitle", taskTitle);
 
@@ -89,17 +85,15 @@ public class NotificationService extends IntentService {
         if (alarmManager != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "Setting alarm for task: " + taskTitle + " at " + alarmTime);
                     alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
-                    Log.d(TAG, "Exact alarm set for " + alarmTime);
                 } else {
                     Log.e(TAG, "Brak uprawnień do ustawienia dokładnych alarmów");
                 }
             } else {
+                Log.d(TAG, "Setting alarm for task: " + taskTitle + " at " + alarmTime);
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
-                Log.d(TAG, "Exact alarm set for " + alarmTime);
             }
-        } else {
-            Log.e(TAG, "AlarmManager is null");
         }
     }
 

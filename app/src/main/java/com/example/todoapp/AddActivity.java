@@ -23,18 +23,18 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
 import android.app.AlarmManager;
 import android.content.pm.PackageManager;
+import androidx.core.content.ContextCompat;
+
 public class AddActivity extends AppCompatActivity {
     private static final int REQUEST_SCHEDULE_EXACT_ALARM = 1;
-    private static final String TAG = "AddActivityCheck";
 
     private EditText titleInput, descriptionInput;
     private Spinner spinner;
@@ -43,17 +43,21 @@ public class AddActivity extends AppCompatActivity {
     private Calendar calendar;
     private static final int PICK_FILE_REQUEST_CODE = 1001;
     private Uri attachmentUri;
+    private static final String TAG = "checkAttach";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
+        // Check and request SCHEDULE_EXACT_ALARM permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             if (!alarmManager.canScheduleExactAlarms()) {
                 Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
                 startActivityForResult(intent, REQUEST_SCHEDULE_EXACT_ALARM);
+            } else {
+                Log.d(TAG, "App already has SCHEDULE_EXACT_ALARM permission");
             }
         }
 
@@ -87,7 +91,6 @@ public class AddActivity extends AppCompatActivity {
                 String description = descriptionInput.getText().toString();
                 String category = spinner.getSelectedItem().toString().toUpperCase();
                 long executionDateMillis = calendar.getTimeInMillis();
-                Log.d(TAG, "Task execution date in millis: " + executionDateMillis);
 
                 if (!title.isEmpty() && !description.isEmpty()) {
                     String attachmentFileName = attachmentUri != null ? getAttachmentFileName(attachmentUri) : null;
@@ -107,7 +110,6 @@ public class AddActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     private void pickAttachment() {
