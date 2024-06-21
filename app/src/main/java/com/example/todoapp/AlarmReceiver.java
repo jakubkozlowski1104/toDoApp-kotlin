@@ -27,7 +27,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .build();
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(2, notification);  // Using a unique ID for each notification
+        notificationManager.notify((int) System.currentTimeMillis(), notification);  // Using a unique ID for each notification
     }
 
     private void createNotificationChannel(Context context) {

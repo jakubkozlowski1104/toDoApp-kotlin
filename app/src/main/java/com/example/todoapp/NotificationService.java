@@ -2,7 +2,6 @@ package com.example.todoapp;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -43,7 +42,7 @@ public class NotificationService extends IntentService {
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("taskTitle", taskTitle);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int) alarmTime, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
@@ -57,7 +56,7 @@ public class NotificationService extends IntentService {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             CharSequence name = "TODO App Channel";
             String description = "Channel for TODO App";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
 
