@@ -16,11 +16,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     private Context context;
     private static final String DATABASE_NAME = "todoApp.db";
     private static final int DATABASE_VERSION = 1;
-
-    // Table Name
     private static final String TABLE_NAME = "tasks";
 
-    // Tasks Table Columns
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_TITLE = "title";
     public static final String COLUMN_DESCRIPTION = "description";
@@ -141,7 +138,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_TITLE, title);
         cv.put(COLUMN_CATEGORY, category);
         cv.put(COLUMN_DESCRIPTION, description);
-        cv.put(COLUMN_DUE_AT, execution_date); // Dodajemy wartość execution_date
+        cv.put(COLUMN_DUE_AT, execution_date);
         long result = db.update(TABLE_NAME, cv, "id=?", new String[]{row_id});
         if(result == -1) {
             Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show();
@@ -152,7 +149,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     void updateTaskStatus(String taskId, boolean isChecked) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        // Aktualizuj kolumnę COLUMN_STATUS na 1, jeśli CheckBox jest zaznaczony, w przeciwnym razie na 0
+
         cv.put(COLUMN_STATUS, isChecked ? 1 : 0);
         int result = db.update(TABLE_NAME, cv, COLUMN_ID + "=?", new String[]{taskId});
         if (result > 0) {

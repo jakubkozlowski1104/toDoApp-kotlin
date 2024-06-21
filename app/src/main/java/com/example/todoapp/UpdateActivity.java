@@ -23,7 +23,7 @@ public class UpdateActivity extends AppCompatActivity {
 
     EditText title_input, description_input;
     Spinner category_spinner;
-    Button update_button2, delete_button; // Dodajemy pole do wyboru daty
+    Button update_button2, delete_button;
     String id, title, category, description;
     EditText execution_input;
     long execution_date;
@@ -37,7 +37,7 @@ public class UpdateActivity extends AppCompatActivity {
         description_input = findViewById(R.id.description_input2);
         update_button2 = findViewById(R.id.updateButton);
         delete_button = findViewById(R.id.deleteButton);
-        execution_input = findViewById(R.id.execution_input);// Inicjalizujemy przycisk wyboru daty
+        execution_input = findViewById(R.id.execution_input);
 
         ArrayAdapter<Category> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Category.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -59,8 +59,7 @@ public class UpdateActivity extends AppCompatActivity {
                 title = title_input.getText().toString().trim();
                 description = description_input.getText().toString().trim();
                 category = category_spinner.getSelectedItem().toString();
-                // Użyj zmiennej execution_date, która przechowuje datę jako wartość typu long
-                myDB.updateData(id, title, category, description, execution_date); // Aktualizujemy bazę danych
+                myDB.updateData(id, title, category, description, execution_date);
                 finish();
             }
         });
@@ -107,7 +106,6 @@ public class UpdateActivity extends AppCompatActivity {
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                // Dismiss dialog
             }
         });
         builder.create().show();
@@ -117,24 +115,20 @@ public class UpdateActivity extends AppCompatActivity {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                // Ustaw datę w polu tekstowym execution_input
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
                 String selectedDate = sdf.format(calendar.getTime());
                 execution_input.setText(selectedDate);
-                // Zapisz datę jako wartość typu long w zmiennej execution_date
                 execution_date = calendar.getTimeInMillis();
             }
         };
 
-        // Ustawienie obecnego czasu jako domyślnego
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        // Wyświetlenie DatePickerDialog
         DatePickerDialog datePickerDialog = new DatePickerDialog(UpdateActivity.this, dateSetListener, year, month, day);
         datePickerDialog.show();
     }

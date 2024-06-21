@@ -75,7 +75,7 @@ public class AddActivity extends AppCompatActivity {
                 if (!title.isEmpty() && !description.isEmpty() && executionDateMillis != -1) {
                     String attachmentFileName = attachmentUri != null ? getAttachmentFileName(attachmentUri) : null;
                     MyDatabaseHelper dbHelper = new MyDatabaseHelper(AddActivity.this);
-                    dbHelper.addTask(title, description, Category.valueOf(category), executionDateMillis, attachmentFileName); // Zaktualizuj metodę, aby przekazać nazwę pliku
+                    dbHelper.addTask(title, description, Category.valueOf(category), executionDateMillis, attachmentFileName);
                     Toast.makeText(AddActivity.this, "Task added successfully", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {

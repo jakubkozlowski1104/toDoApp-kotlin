@@ -33,7 +33,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, ArrayList<String> created_at, ArrayList<String> attachment_path, MyDatabaseHelper myDb) {
         this.activity = activity;
-        this.context = context != null ? context : activity.getApplicationContext(); // Ensure context is not null
+        this.context = context != null ? context : activity.getApplicationContext();
         this.originalTask_id = new ArrayList<>(task_id);
         this.originalTitle = new ArrayList<>(title);
         this.originalDescription = new ArrayList<>(description);
@@ -107,7 +107,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 int currentPosition = holder.getAdapterPosition();
                 String taskTitle = title.get(currentPosition);
 
-                // Uruchom usługę powiadomień używając kontekstu z MainActivity
                 Intent notificationIntent = new Intent(context, NotificationService.class);
                 notificationIntent.putExtra("taskTitle", taskTitle);
                 notificationIntent.putExtra("executionTimeMillis", Long.parseLong(execution_date.get(position)));
@@ -124,7 +123,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 intent.putExtra("description", description.get(position));
                 intent.putExtra("category", category.get(position));
                 intent.putExtra("execution_date", execution_date.get(position));
-                intent.putExtra("attachment_path", attachment_path.get(position)); // Przekaż ścieżkę załącznika
+                intent.putExtra("attachment_path", attachment_path.get(position));
                 activity.startActivityForResult(intent, 1);
             }
         });
@@ -198,7 +197,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             checkBox = itemView.findViewById(R.id.checkBox);
             mainLayout = itemView.findViewById(R.id.mainLayout);
             showNotifyButton = itemView.findViewById(R.id.showNotify);
-            attachmentInfoSingleTask = itemView.findViewById(R.id.attachemntInfoSigleTask); // Dodaj to pole
+            attachmentInfoSingleTask = itemView.findViewById(R.id.attachemntInfoSigleTask);
         }
     }
 }

@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing
             }
         });
 
@@ -116,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         execution_date = new ArrayList<>();
         task_status = new ArrayList<>();
         created_at = new ArrayList<>();
-        attachment_path = new ArrayList<>(); // Initialize attachment_path
+        attachment_path = new ArrayList<>();
 
         sharedPreferences = getSharedPreferences("SettingsPreferences", MODE_PRIVATE);
 
@@ -130,14 +129,14 @@ public class MainActivity extends AppCompatActivity {
                 execution_date,
                 task_status,
                 created_at,
-                attachment_path, // Add this parameter
+                attachment_path,
                 myDb
         );
 
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
-        refreshData(); // Initial data fetch
+        refreshData();
     }
 
     @Override
@@ -176,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             execution_date.clear();
             task_status.clear();
             created_at.clear();
-            attachment_path.clear(); // Clear attachment_path
+            attachment_path.clear();
 
             if (cursor != null) {
                 int columnIndexID = cursor.getColumnIndex(MyDatabaseHelper.COLUMN_ID);
@@ -196,9 +195,9 @@ public class MainActivity extends AppCompatActivity {
                     execution_date.add(cursor.getString(columnIndexExecutionDate));
                     task_status.add(cursor.getString(columnIndexStatus));
                     created_at.add(cursor.getString(columnIndexCreatedAt));
-                    attachment_path.add(cursor.getString(columnIndexAttachment)); // Add attachment_path
+                    attachment_path.add(cursor.getString(columnIndexAttachment));
                 }
-                cursor.close(); // Close the cursor
+                cursor.close();
             }
         }
     }
@@ -206,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
     void refreshData() {
         String searchText = searchView.getQuery().toString();
         String selectedCategory = categorySpinner.getSelectedItem().toString();
-        storeDataInArrays(searchText, selectedCategory); // Refresh data with current search text and category
+        storeDataInArrays(searchText, selectedCategory);
         customAdapter.notifyDataSetChanged();
     }
 
