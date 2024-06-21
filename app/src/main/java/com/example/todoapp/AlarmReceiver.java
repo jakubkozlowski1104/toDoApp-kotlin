@@ -23,17 +23,18 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setContentTitle("Przypomnienie")
                 .setContentText("5 minut do końca zadania: \"" + taskTitle + "\"")
                 .setSmallIcon(R.drawable.ic_add)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build();
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(2, notification);  // Użycie innego ID, aby nie nadpisywać poprzednich powiadomień
+        notificationManager.notify(2, notification);  // Using a unique ID for each notification
     }
 
     private void createNotificationChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "TODO App Channel";
             String description = "Channel for TODO App";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
 

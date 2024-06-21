@@ -110,6 +110,7 @@ public class AddActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
     private void pickAttachment() {

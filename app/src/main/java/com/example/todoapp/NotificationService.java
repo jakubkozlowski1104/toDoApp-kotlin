@@ -8,12 +8,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 public class NotificationService extends IntentService {
     private static final String CHANNEL_ID = "TODO_APP_CHANNEL";
@@ -33,45 +30,12 @@ public class NotificationService extends IntentService {
 
         createNotificationChannel();
 
-        // Ustawienie alarmu 1 minutę przed zakończeniem zadania
-        long alarmTime = executionTimeMillis - 1 * 60 * 1000;
+        // Set alarm 5 minutes before the task is due
+        long alarmTime = executionTimeMillis - 5 * 60 * 1000; // 5 minutes before due date
         Log.d(TAG, "Execution time: " + executionTimeMillis + ", Alarm time: " + alarmTime);
+
         if (alarmTime > System.currentTimeMillis()) {
             setAlarm(alarmTime, taskTitle);
-        }
-
-        Log.d(TAG, "Creating notification");
-
-        if (executionTimeMillis < System.currentTimeMillis()) {
-            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("Powiadomienie")
-                    .setContentText("Czas na wykonanie zadania: \"" + taskTitle + "\" MINĄŁ!")
-                    .setSmallIcon(R.drawable.ic_add)
-                    .build();
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.notify(NOTIFICATION_ID, notification);
-        } else {
-            long timeDiffMillis = executionTimeMillis - System.currentTimeMillis();
-            long days = timeDiffMillis / (1000 * 60 * 60 * 24);
-            long hours = (timeDiffMillis % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
-            long minutes = (timeDiffMillis % (1000 * 60 * 60)) / (1000 * 60);
-
-            String timeLeft = "";
-            Log.d(TAG, "Dodano dni do timeLeft: " + days);
-            if (days > 0) {
-                timeLeft += days + " dni, ";
-            }
-            timeLeft += hours + " godzin, " + minutes + " minut";
-
-            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("Powiadomienie")
-                    .setContentText("Do zakończenia zadania \"" + taskTitle + "\" pozostało: " + timeLeft)
-                    .setSmallIcon(R.drawable.ic_add)
-                    .build();
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.notify(NOTIFICATION_ID, notification);
         }
     }
 
@@ -83,23 +47,14 @@ public class NotificationService extends IntentService {
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "Setting alarm for task: " + taskTitle + " at " + alarmTime);
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
-                } else {
-                    Log.e(TAG, "Brak uprawnień do ustawienia dokładnych alarmów");
-                }
-            } else {
-                Log.d(TAG, "Setting alarm for task: " + taskTitle + " at " + alarmTime);
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
-            }
+            Log.d(TAG, "Setting alarm for task: " + taskTitle + " at " + alarmTime);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
         }
     }
 
     private void createNotificationChannel() {
         Log.d(TAG, "Creating notification channel");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             CharSequence name = "TODO App Channel";
             String description = "Channel for TODO App";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
