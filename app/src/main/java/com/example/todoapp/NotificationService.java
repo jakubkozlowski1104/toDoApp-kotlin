@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 public class NotificationService extends IntentService {
     private static final String CHANNEL_ID = "TODO_APP_CHANNEL";
     private static final int NOTIFICATION_ID = 1;
+    private static final String TAG = "NotificationServiceCheck";
 
     public NotificationService() {
         super("NotificationService");
@@ -25,7 +26,7 @@ public class NotificationService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d("NotificationServiceCheck", "Handling intent");
+        Log.d(TAG, "Handling intent");
 
         String taskTitle = intent.getStringExtra("taskTitle");
         long executionTimeMillis = intent.getLongExtra("executionTimeMillis", -1);
@@ -34,11 +35,15 @@ public class NotificationService extends IntentService {
 
         // Ustawienie alarmu 5 minut przed zakończeniem zadania
         long alarmTime = executionTimeMillis - 5 * 60 * 1000;
+        Log.d(TAG, "Execution time: " + executionTimeMillis + ", Alarm time: " + alarmTime);
+
         if (alarmTime > System.currentTimeMillis()) {
             setAlarm(alarmTime, taskTitle);
+        } else {
+            Log.d(TAG, "Alarm time is in the past, not setting an alarm.");
         }
 
-        Log.d("NotificationServiceCheck", "Creating notification");
+        Log.d(TAG, "Creating notification");
 
         if (executionTimeMillis < System.currentTimeMillis()) {
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -56,7 +61,7 @@ public class NotificationService extends IntentService {
             long minutes = (timeDiffMillis % (1000 * 60 * 60)) / (1000 * 60);
 
             String timeLeft = "";
-            Log.d("NotificationServiceCheck", "Dodano dni do timeLeft: " + days);
+            Log.d(TAG, "Dodano dni do timeLeft: " + days);
             if (days > 0) {
                 timeLeft += days + " dni, ";
             }
@@ -74,6 +79,7 @@ public class NotificationService extends IntentService {
     }
 
     private void setAlarm(long alarmTime, String taskTitle) {
+        Log.d(TAG, "Setting alarm for task: " + taskTitle + " at " + alarmTime);
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("taskTitle", taskTitle);
 
@@ -84,18 +90,21 @@ public class NotificationService extends IntentService {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED) {
                     alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+                    Log.d(TAG, "Exact alarm set for " + alarmTime);
                 } else {
-                    Log.e("NotificationService", "Brak uprawnień do ustawienia dokładnych alarmów");
+                    Log.e(TAG, "Brak uprawnień do ustawienia dokładnych alarmów");
                 }
             } else {
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+                Log.d(TAG, "Exact alarm set for " + alarmTime);
             }
+        } else {
+            Log.e(TAG, "AlarmManager is null");
         }
     }
 
-
     private void createNotificationChannel() {
-        Log.d("NotificationService", "Creating notification channel");
+        Log.d(TAG, "Creating notification channel");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "TODO App Channel";
             String description = "Channel for TODO App";

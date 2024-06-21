@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,20 +23,18 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import android.app.AlarmManager;
 import android.content.pm.PackageManager;
-import android.provider.Settings;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 public class AddActivity extends AppCompatActivity {
     private static final int REQUEST_SCHEDULE_EXACT_ALARM = 1;
+    private static final String TAG = "AddActivityCheck";
 
     private EditText titleInput, descriptionInput;
     private Spinner spinner;
@@ -44,7 +43,6 @@ public class AddActivity extends AppCompatActivity {
     private Calendar calendar;
     private static final int PICK_FILE_REQUEST_CODE = 1001;
     private Uri attachmentUri;
-    private static final String TAG = "checkAttach";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +87,7 @@ public class AddActivity extends AppCompatActivity {
                 String description = descriptionInput.getText().toString();
                 String category = spinner.getSelectedItem().toString().toUpperCase();
                 long executionDateMillis = calendar.getTimeInMillis();
+                Log.d(TAG, "Task execution date in millis: " + executionDateMillis);
 
                 if (!title.isEmpty() && !description.isEmpty()) {
                     String attachmentFileName = attachmentUri != null ? getAttachmentFileName(attachmentUri) : null;
@@ -177,4 +176,3 @@ public class AddActivity extends AppCompatActivity {
         }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
     }
 }
-
