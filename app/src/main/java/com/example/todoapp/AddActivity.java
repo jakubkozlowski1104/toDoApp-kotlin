@@ -2,6 +2,7 @@ package com.example.todoapp;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -24,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class AddActivity extends AppCompatActivity {
 
@@ -35,6 +38,7 @@ public class AddActivity extends AppCompatActivity {
     private static final int PICK_FILE_REQUEST_CODE = 1001;
     private Uri attachmentUri;
     private static final String TAG = "checkAttach";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +63,7 @@ public class AddActivity extends AppCompatActivity {
         executionInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDatePicker();
+                showDateTimePicker();
             }
         });
 
@@ -69,10 +73,9 @@ public class AddActivity extends AppCompatActivity {
                 String title = titleInput.getText().toString();
                 String description = descriptionInput.getText().toString();
                 String category = spinner.getSelectedItem().toString().toUpperCase();
-                String executionDateStr = executionInput.getText().toString();
-                long executionDateMillis = convertDateStringToMillis(executionDateStr);
+                long executionDateMillis = calendar.getTimeInMillis();
 
-                if (!title.isEmpty() && !description.isEmpty() && executionDateMillis != -1) {
+                if (!title.isEmpty() && !description.isEmpty()) {
                     String attachmentFileName = attachmentUri != null ? getAttachmentFileName(attachmentUri) : null;
                     MyDatabaseHelper dbHelper = new MyDatabaseHelper(AddActivity.this);
                     dbHelper.addTask(title, description, Category.valueOf(category), executionDateMillis, attachmentFileName);
@@ -104,7 +107,6 @@ public class AddActivity extends AppCompatActivity {
         }
     }
 
-
     @SuppressLint("Range")
     private String getAttachmentFileName(Uri uri) {
         String displayName = null;
@@ -125,33 +127,24 @@ public class AddActivity extends AppCompatActivity {
         return displayName;
     }
 
-
-    private void showDatePicker() {
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(AddActivity.this, new DatePickerDialog.OnDateSetListener() {
+    private void showDateTimePicker() {
+        final Calendar currentDate = Calendar.getInstance();
+        calendar = Calendar.getInstance();
+        new DatePickerDialog(AddActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                month += 1;
-                String date = year + "-" + (month < 10 ? "0" + month : month) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
-                executionInput.setText(date);
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                calendar.set(year, monthOfYear, dayOfMonth);
+                new TimePickerDialog(AddActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        calendar.set(Calendar.MINUTE, minute);
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                        executionInput.setText(sdf.format(calendar.getTime()));
+                    }
+                }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show();
             }
-        }, year, month, day);
-
-        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
-        datePickerDialog.show();
-    }
-
-    private long convertDateStringToMillis(String dateString) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date date = sdf.parse(dateString);
-            return date.getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return -1;
-        }
+        }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
     }
 }
+

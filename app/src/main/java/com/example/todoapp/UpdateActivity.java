@@ -1,6 +1,7 @@
 package com.example.todoapp;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -27,6 +29,8 @@ public class UpdateActivity extends AppCompatActivity {
     String id, title, category, description;
     EditText execution_input;
     long execution_date;
+    Calendar calendar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +42,7 @@ public class UpdateActivity extends AppCompatActivity {
         update_button2 = findViewById(R.id.updateButton);
         delete_button = findViewById(R.id.deleteButton);
         execution_input = findViewById(R.id.execution_input);
+        calendar = Calendar.getInstance();
 
         ArrayAdapter<Category> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Category.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -48,7 +53,7 @@ public class UpdateActivity extends AppCompatActivity {
         execution_input.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDatePickerDialog();
+                showDateTimePicker();
             }
         });
 
@@ -59,11 +64,10 @@ public class UpdateActivity extends AppCompatActivity {
                 title = title_input.getText().toString().trim();
                 description = description_input.getText().toString().trim();
                 category = category_spinner.getSelectedItem().toString();
-                myDB.updateData(id, title, category, description, execution_date);
+                myDB.updateData(id, title, category, description, calendar.getTimeInMillis());
                 finish();
             }
         });
-
 
         delete_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +90,10 @@ public class UpdateActivity extends AppCompatActivity {
             Category selectedCategory = Category.valueOf(category);
             int position = ((ArrayAdapter<Category>) category_spinner.getAdapter()).getPosition(selectedCategory);
             category_spinner.setSelection(position);
+
+            calendar.setTimeInMillis(execution_date);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            execution_input.setText(sdf.format(calendar.getTime()));
         } else {
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
         }
@@ -111,26 +119,23 @@ public class UpdateActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    private void showDatePickerDialog() {
-        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+    private void showDateTimePicker() {
+        final Calendar currentDate = Calendar.getInstance();
+        calendar = Calendar.getInstance();
+        new DatePickerDialog(UpdateActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(year, month, dayOfMonth);
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                String selectedDate = sdf.format(calendar.getTime());
-                execution_input.setText(selectedDate);
-                execution_date = calendar.getTimeInMillis();
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                calendar.set(year, monthOfYear, dayOfMonth);
+                new TimePickerDialog(UpdateActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        calendar.set(Calendar.MINUTE, minute);
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                        execution_input.setText(sdf.format(calendar.getTime()));
+                    }
+                }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show();
             }
-        };
-
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(UpdateActivity.this, dateSetListener, year, month, day);
-        datePickerDialog.show();
+        }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
     }
-
 }
