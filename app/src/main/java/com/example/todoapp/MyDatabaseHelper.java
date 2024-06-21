@@ -167,4 +167,16 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "Successfully deleted!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public String getLastInsertedTaskId() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT last_insert_rowid()", null);
+        if (cursor != null && cursor.moveToFirst()) {
+            String lastId = cursor.getString(0);
+            cursor.close();
+            return lastId;
+        }
+        return null;
+    }
+
 }

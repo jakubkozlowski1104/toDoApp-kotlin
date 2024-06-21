@@ -25,7 +25,11 @@ public class NotificationService extends IntentService {
         Log.d(TAG, "Handling intent");
 
         String taskTitle = intent.getStringExtra("taskTitle");
+        String taskId = intent.getStringExtra("taskId");
+        String taskDescription = intent.getStringExtra("taskDescription");
+        String taskCategory = intent.getStringExtra("taskCategory");
         long executionTimeMillis = intent.getLongExtra("executionTimeMillis", -1);
+        String attachmentPath = intent.getStringExtra("attachmentPath");
 
         createNotificationChannel();
 
@@ -34,13 +38,18 @@ public class NotificationService extends IntentService {
         Log.d(TAG, "Execution time: " + executionTimeMillis + ", Alarm time: " + alarmTime);
 
         if (alarmTime > System.currentTimeMillis()) {
-            setAlarm(alarmTime, taskTitle);
+            setAlarm(alarmTime, taskId, taskTitle, taskDescription, taskCategory, executionTimeMillis, attachmentPath);
         }
     }
 
-    private void setAlarm(long alarmTime, String taskTitle) {
+    private void setAlarm(long alarmTime, String taskId, String taskTitle, String taskDescription, String taskCategory, long executionDate, String attachmentPath) {
         Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.putExtra("taskId", taskId);
         intent.putExtra("taskTitle", taskTitle);
+        intent.putExtra("taskDescription", taskDescription);
+        intent.putExtra("taskCategory", taskCategory);
+        intent.putExtra("executionDate", executionDate);
+        intent.putExtra("attachmentPath", attachmentPath);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int) alarmTime, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 

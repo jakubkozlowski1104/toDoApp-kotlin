@@ -98,10 +98,17 @@ public class AddActivity extends AppCompatActivity {
                     dbHelper.addTask(title, description, Category.valueOf(category), executionDateMillis, attachmentFileName);
                     Toast.makeText(AddActivity.this, "Task added successfully", Toast.LENGTH_SHORT).show();
 
+                    // Get the ID of the added task
+                    String taskId = dbHelper.getLastInsertedTaskId();
+
                     // Start NotificationService to set the alarm
                     Intent notificationIntent = new Intent(AddActivity.this, NotificationService.class);
+                    notificationIntent.putExtra("taskId", taskId);
                     notificationIntent.putExtra("taskTitle", title);
+                    notificationIntent.putExtra("taskDescription", description);
+                    notificationIntent.putExtra("taskCategory", category);
                     notificationIntent.putExtra("executionTimeMillis", executionDateMillis);
+                    notificationIntent.putExtra("attachmentPath", attachmentFileName);
                     startService(notificationIntent);
 
                     finish();
@@ -110,6 +117,7 @@ public class AddActivity extends AppCompatActivity {
                 }
             }
         });
+
 
 
     }

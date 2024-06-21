@@ -3,6 +3,7 @@ package com.example.todoapp;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,14 +17,36 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String taskTitle = intent.getStringExtra("taskTitle");
+        String taskId = intent.getStringExtra("taskId");
+        String taskDescription = intent.getStringExtra("taskDescription");
+        String taskCategory = intent.getStringExtra("taskCategory");
+        long executionDate = intent.getLongExtra("executionDate", -1);
+        String attachmentPath = intent.getStringExtra("attachmentPath");
 
         createNotificationChannel(context);
+
+        Intent updateIntent = new Intent(context, UpdateActivity.class);
+        updateIntent.putExtra("id", taskId);
+        updateIntent.putExtra("title", taskTitle);
+        updateIntent.putExtra("description", taskDescription);
+        updateIntent.putExtra("category", taskCategory);
+        updateIntent.putExtra("execution_date", executionDate);
+        updateIntent.putExtra("attachment_path", attachmentPath);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context,
+                (int) System.currentTimeMillis(),
+                updateIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
 
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle("Przypomnienie")
                 .setContentText("5 minut do końca zadania: \"" + taskTitle + "\"")
                 .setSmallIcon(R.drawable.ic_add)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
                 .build();
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
