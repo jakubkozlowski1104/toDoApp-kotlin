@@ -22,6 +22,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String taskCategory = intent.getStringExtra("taskCategory");
         long executionDate = intent.getLongExtra("executionDate", -1);
         String attachmentPath = intent.getStringExtra("attachmentPath");
+        long notificationTimeMillis = intent.getLongExtra("notificationTimeMillis", 5 * 60 * 1000);
 
         createNotificationChannel(context);
 
@@ -41,9 +42,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
+        String notificationText = getNotificationText(notificationTimeMillis, taskTitle);
+
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle("Przypomnienie")
-                .setContentText("5 minut do końca zadania: \"" + taskTitle + "\"")
+                .setContentText(notificationText)
                 .setSmallIcon(R.drawable.ic_add)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
@@ -52,6 +55,11 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify((int) System.currentTimeMillis(), notification);
+    }
+
+    private String getNotificationText(long notificationTimeMillis, String taskTitle) {
+        int minutesBefore = (int) (notificationTimeMillis / 60000);
+        return minutesBefore + " minut do końca zadania: \"" + taskTitle + "\"";
     }
 
     private void createNotificationChannel(Context context) {
