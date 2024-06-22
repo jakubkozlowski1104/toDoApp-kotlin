@@ -1,5 +1,7 @@
 package com.example.todoapp;
 
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;

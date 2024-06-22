@@ -21,12 +21,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
 public class UpdateActivity extends AppCompatActivity {
 
     EditText title_input, description_input;
     Spinner category_spinner;
-    Button update_button2, delete_button;
+    Button update_button2, delete_button, backButton;
     String id, title, category, description;
     EditText execution_input;
     long execution_date;
@@ -44,6 +48,7 @@ public class UpdateActivity extends AppCompatActivity {
         delete_button = findViewById(R.id.deleteButton);
         execution_input = findViewById(R.id.execution_input);
         calendar = Calendar.getInstance();
+        backButton = findViewById(R.id.back);
 
         ArrayAdapter<Category> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Category.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -51,6 +56,14 @@ public class UpdateActivity extends AppCompatActivity {
 
         getAndSetIntentData();
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UpdateActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         execution_input.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
