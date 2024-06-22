@@ -50,16 +50,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:layout_marginTop="8dp"
                 android:text="Personal"
                 android:textSize="13dp"
+                app:layout_constraintBottom_toBottomOf="@+id/taskTitle"
                 app:layout_constraintStart_toEndOf="@+id/taskTitle"
                 app:layout_constraintTop_toTopOf="@+id/taskTitle" />
 
             <TextView
                 android:id="@+id/taskDescription"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
+                android:layout_width="346dp"
+                android:layout_height="20dp"
                 android:maxLines="10"
                 android:text="Śmieci już śmierdzą w domu od ddddddddddddddtygodnia!"
                 android:textSize="13dp"
@@ -87,8 +87,8 @@
 
             <Button
                 android:id="@+id/showNotify"
-                android:layout_width="95dp"
-                android:layout_height="35dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:text="notify"
                 android:textSize="10dp"
                 app:layout_constraintEnd_toEndOf="@+id/showCreatedDate"
@@ -99,10 +99,12 @@
                 android:id="@+id/showCreatedDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="9dp"
                 android:text="created at: 24.05.2025"
-                android:textSize="10dp"
-                app:layout_constraintStart_toEndOf="@+id/taskDescription"
-                app:layout_constraintTop_toBottomOf="@+id/showNotify" />
+                android:textSize="12dp"
+                app:layout_constraintBottom_toBottomOf="@+id/attachemntInfoSigleTask"
+                app:layout_constraintStart_toEndOf="@+id/attachemntInfoSigleTask"
+                app:layout_constraintTop_toTopOf="@+id/attachemntInfoSigleTask" />
 
             <TextView
                 android:id="@+id/attachemntInfoSigleTask"
