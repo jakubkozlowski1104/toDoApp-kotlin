@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -64,8 +65,13 @@ public class UpdateActivity extends AppCompatActivity {
                 title = title_input.getText().toString().trim();
                 description = description_input.getText().toString().trim();
                 category = category_spinner.getSelectedItem().toString();
-                myDB.updateData(id, title, category, description, calendar.getTimeInMillis());
-                finish();
+                try {
+                    myDB.updateData(id, title, category, description, calendar.getTimeInMillis());
+                    finish();
+                } catch (Exception e) {
+                    Log.e("check", "Error updating task", e);
+                    Toast.makeText(UpdateActivity.this, "An error occurred while updating the task", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -87,7 +93,13 @@ public class UpdateActivity extends AppCompatActivity {
             // Dodane sprawdzenie czy execution_date nie jest null
             String executionDateString = getIntent().getStringExtra("execution_date");
             if (executionDateString != null) {
-                execution_date = Long.parseLong(executionDateString);
+                try {
+                    execution_date = Long.parseLong(executionDateString);
+                    calendar.setTimeInMillis(execution_date);
+                } catch (NumberFormatException e) {
+                    Log.e("check", "Invalid execution date", e);
+                    execution_date = System.currentTimeMillis(); // lub inna wartość domyślna
+                }
             } else {
                 execution_date = System.currentTimeMillis(); // lub inna wartość domyślna
             }
@@ -98,13 +110,13 @@ public class UpdateActivity extends AppCompatActivity {
             int position = ((ArrayAdapter<Category>) category_spinner.getAdapter()).getPosition(selectedCategory);
             category_spinner.setSelection(position);
 
-            calendar.setTimeInMillis(execution_date);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             execution_input.setText(sdf.format(calendar.getTime()));
         } else {
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
     void confirmDialog() {

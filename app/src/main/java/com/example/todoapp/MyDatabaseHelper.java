@@ -11,7 +11,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
-    private static final String TAG = "MyDatabaseHelperCheck";
+    private static final String TAG = "check";
 
     private Context context;
     private static final String DATABASE_NAME = "todoApp.db";
@@ -139,12 +139,19 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_CATEGORY, category);
         cv.put(COLUMN_DESCRIPTION, description);
         cv.put(COLUMN_DUE_AT, execution_date);
-        long result = db.update(TABLE_NAME, cv, "id=?", new String[]{row_id});
-        if(result == -1) {
-            Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show();
-        } else {
+        try {
+            long result = db.update(TABLE_NAME, cv, "id=?", new String[]{row_id});
+            if(result == -1) {
+                Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Task updated successfully", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating data", e);
+            Toast.makeText(context, "An error occurred while updating the task", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     void updateTaskStatus(String taskId, boolean isChecked) {
         SQLiteDatabase db = this.getWritableDatabase();

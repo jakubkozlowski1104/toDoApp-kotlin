@@ -122,7 +122,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 intent.putExtra("title", title.get(position));
                 intent.putExtra("description", description.get(position));
                 intent.putExtra("category", category.get(position));
-                intent.putExtra("execution_date", execution_date.get(position));
+                intent.putExtra("execution_date", Long.parseLong(execution_date.get(position)));
                 intent.putExtra("attachment_path", attachment_path.get(position));
                 activity.startActivityForResult(intent, 1);
             }
