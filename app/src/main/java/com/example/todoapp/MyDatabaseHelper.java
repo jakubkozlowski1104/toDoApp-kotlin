@@ -132,13 +132,14 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return db != null ? db.rawQuery(query, null) : null;
     }
 
-    void updateData(String row_id, String title, String category, String description, long execution_date) {
+    void updateData(String row_id, String title, String category, String description, long execution_date, String attachmentPath) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_TITLE, title);
         cv.put(COLUMN_CATEGORY, category);
         cv.put(COLUMN_DESCRIPTION, description);
         cv.put(COLUMN_DUE_AT, execution_date);
+        cv.put(COLUMN_ATTACHMENT_PATH, attachmentPath);
         try {
             long result = db.update(TABLE_NAME, cv, "id=?", new String[]{row_id});
             if(result == -1) {
@@ -151,6 +152,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "An error occurred while updating the task", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
     void updateTaskStatus(String taskId, boolean isChecked) {

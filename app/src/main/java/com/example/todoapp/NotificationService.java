@@ -32,12 +32,24 @@ public class NotificationService extends IntentService {
 
         createNotificationChannel();
 
+        // Cancel any existing alarm for the task
+        cancelAlarm(taskId);
+
         // Set alarm 5 minutes before the task is due
         long alarmTime = executionTimeMillis - 5 * 60 * 1000; // 5 minutes before due date
         Log.d(TAG, "Execution time: " + executionTimeMillis + ", Alarm time: " + alarmTime);
 
         if (alarmTime > System.currentTimeMillis()) {
             setAlarm(alarmTime, taskId, taskTitle, taskDescription, taskCategory, executionTimeMillis, attachmentPath);
+        }
+    }
+
+    private void cancelAlarm(String taskId) {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, taskId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
         }
     }
 
@@ -50,7 +62,7 @@ public class NotificationService extends IntentService {
         intent.putExtra("executionDate", executionDate);
         intent.putExtra("attachmentPath", attachmentPath);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int) alarmTime, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, taskId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {

@@ -78,8 +78,21 @@ public class UpdateActivity extends AppCompatActivity {
                 title = title_input.getText().toString().trim();
                 description = description_input.getText().toString().trim();
                 category = category_spinner.getSelectedItem().toString();
+                String attachmentPath = getIntent().getStringExtra("attachment_path");
+
                 try {
-                    myDB.updateData(id, title, category, description, calendar.getTimeInMillis());
+                    myDB.updateData(id, title, category, description, calendar.getTimeInMillis(), attachmentPath);
+
+                    // Start NotificationService to update the alarm
+                    Intent notificationIntent = new Intent(UpdateActivity.this, NotificationService.class);
+                    notificationIntent.putExtra("taskId", id);
+                    notificationIntent.putExtra("taskTitle", title);
+                    notificationIntent.putExtra("taskDescription", description);
+                    notificationIntent.putExtra("taskCategory", category);
+                    notificationIntent.putExtra("executionTimeMillis", calendar.getTimeInMillis());
+                    notificationIntent.putExtra("attachmentPath", attachmentPath);
+                    startService(notificationIntent);
+
                     finish();
                 } catch (Exception e) {
                     Log.e("check", "Error updating task", e);
@@ -87,6 +100,7 @@ public class UpdateActivity extends AppCompatActivity {
                 }
             }
         });
+
 
         delete_button.setOnClickListener(new View.OnClickListener() {
             @Override
