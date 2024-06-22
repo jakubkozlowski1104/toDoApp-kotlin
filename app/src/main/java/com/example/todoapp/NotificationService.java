@@ -13,7 +13,6 @@ import androidx.core.app.NotificationCompat;
 
 public class NotificationService extends IntentService {
     private static final String CHANNEL_ID = "TODO_APP_CHANNEL";
-    private static final int NOTIFICATION_ID = 1;
     private static final String TAG = "NotificationServiceCheck";
 
     public NotificationService() {
@@ -24,8 +23,8 @@ public class NotificationService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "Handling intent");
 
-        String taskTitle = intent.getStringExtra("taskTitle");
         String taskId = intent.getStringExtra("taskId");
+        String taskTitle = intent.getStringExtra("taskTitle");
         String taskDescription = intent.getStringExtra("taskDescription");
         String taskCategory = intent.getStringExtra("taskCategory");
         long executionTimeMillis = intent.getLongExtra("executionTimeMillis", -1);

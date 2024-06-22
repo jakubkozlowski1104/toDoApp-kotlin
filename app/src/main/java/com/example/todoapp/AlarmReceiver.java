@@ -16,15 +16,17 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String taskTitle = intent.getStringExtra("taskTitle");
         String taskId = intent.getStringExtra("taskId");
+        String taskTitle = intent.getStringExtra("taskTitle");
         String taskDescription = intent.getStringExtra("taskDescription");
         String taskCategory = intent.getStringExtra("taskCategory");
         long executionDate = intent.getLongExtra("executionDate", -1);
         String attachmentPath = intent.getStringExtra("attachmentPath");
 
         createNotificationChannel(context);
-
+        if (executionDate == -1) {
+            executionDate = System.currentTimeMillis(); // lub inna wartość domyślna
+        }
         Intent updateIntent = new Intent(context, UpdateActivity.class);
         updateIntent.putExtra("id", taskId);
         updateIntent.putExtra("title", taskTitle);
@@ -32,6 +34,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         updateIntent.putExtra("category", taskCategory);
         updateIntent.putExtra("execution_date", executionDate);
         updateIntent.putExtra("attachment_path", attachmentPath);
+        updateIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
@@ -50,7 +53,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .build();
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify((int) System.currentTimeMillis(), notification);  // Using a unique ID for each notification
+        notificationManager.notify((int) System.currentTimeMillis(), notification);
     }
 
     private void createNotificationChannel(Context context) {

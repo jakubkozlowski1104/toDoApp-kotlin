@@ -83,7 +83,14 @@ public class UpdateActivity extends AppCompatActivity {
             title = getIntent().getStringExtra("title");
             category = getIntent().getStringExtra("category");
             description = getIntent().getStringExtra("description");
-            execution_date = Long.parseLong(getIntent().getStringExtra("execution_date"));
+
+            // Dodane sprawdzenie czy execution_date nie jest null
+            String executionDateString = getIntent().getStringExtra("execution_date");
+            if (executionDateString != null) {
+                execution_date = Long.parseLong(executionDateString);
+            } else {
+                execution_date = System.currentTimeMillis(); // lub inna wartość domyślna
+            }
 
             title_input.setText(title);
             description_input.setText(description);
@@ -98,6 +105,7 @@ public class UpdateActivity extends AppCompatActivity {
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     void confirmDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
