@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
@@ -34,12 +35,28 @@ public class NotificationService extends IntentService {
         // Cancel any existing alarm for the task
         cancelAlarm(taskId);
 
-        // Set alarm 5 minutes before the task is due
-        long alarmTime = executionTimeMillis - 5 * 60 * 1000; // 5 minutes before due date
+        // Get notification time preference
+        SharedPreferences sharedPreferences = getSharedPreferences("SettingsPreferences", MODE_PRIVATE);
+        int notificationTimePosition = sharedPreferences.getInt("notificationTime", 1);
+        long notificationTimeMillis = getNotificationTimeInMillis(notificationTimePosition);
+
+        // Set alarm before the task is due
+        long alarmTime = executionTimeMillis - notificationTimeMillis;
         Log.d(TAG, "Execution time: " + executionTimeMillis + ", Alarm time: " + alarmTime);
 
         if (alarmTime > System.currentTimeMillis()) {
             setAlarm(alarmTime, taskId, taskTitle, taskDescription, taskCategory, executionTimeMillis, attachmentPath);
+        }
+    }
+
+    private long getNotificationTimeInMillis(int position) {
+        switch (position) {
+            case 0: return 1 * 60 * 1000; // 1 minute
+            case 1: return 5 * 60 * 1000; // 5 minutes
+            case 2: return 10 * 60 * 1000; // 10 minutes
+            case 3: return 30 * 60 * 1000; // 30 minutes
+            case 4: return 60 * 60 * 1000; // 60 minutes
+            default: return 5 * 60 * 1000; // default to 5 minutes
         }
     }
 
