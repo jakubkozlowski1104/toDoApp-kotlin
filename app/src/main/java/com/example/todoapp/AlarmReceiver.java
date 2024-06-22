@@ -24,9 +24,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String attachmentPath = intent.getStringExtra("attachmentPath");
 
         createNotificationChannel(context);
-        if (executionDate == -1) {
-            executionDate = System.currentTimeMillis(); // lub inna wartość domyślna
-        }
+
         Intent updateIntent = new Intent(context, UpdateActivity.class);
         updateIntent.putExtra("id", taskId);
         updateIntent.putExtra("title", taskTitle);

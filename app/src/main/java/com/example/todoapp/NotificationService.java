@@ -7,9 +7,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
-
-import androidx.core.app.NotificationCompat;
 
 public class NotificationService extends IntentService {
     private static final String CHANNEL_ID = "TODO_APP_CHANNEL";
@@ -67,13 +66,17 @@ public class NotificationService extends IntentService {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
             Log.d(TAG, "Setting alarm for task: " + taskTitle + " at " + alarmTime);
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+            }
         }
     }
 
     private void createNotificationChannel() {
         Log.d(TAG, "Creating notification channel");
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "TODO App Channel";
             String description = "Channel for TODO App";
             int importance = NotificationManager.IMPORTANCE_HIGH;
