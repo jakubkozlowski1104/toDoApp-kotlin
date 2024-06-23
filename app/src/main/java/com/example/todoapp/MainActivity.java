@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 refreshData();
             }
         });
-
+//check
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
