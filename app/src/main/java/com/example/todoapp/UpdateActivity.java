@@ -30,7 +30,9 @@ public class UpdateActivity extends AppCompatActivity {
 
     EditText title_input, description_input;
     Spinner category_spinner;
+
     Button update_button2, delete_button, backButton;
+
     String id, title, category, description;
     EditText execution_input;
     long execution_date;
@@ -47,14 +49,17 @@ public class UpdateActivity extends AppCompatActivity {
         update_button2 = findViewById(R.id.updateButton);
         delete_button = findViewById(R.id.deleteButton);
         execution_input = findViewById(R.id.execution_input);
+
         calendar = Calendar.getInstance();
         backButton = findViewById(R.id.back);
+
 
         ArrayAdapter<Category> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Category.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         category_spinner.setAdapter(adapter);
 
         getAndSetIntentData();
+
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,6 +69,7 @@ public class UpdateActivity extends AppCompatActivity {
                 finish();
             }
         });
+
         execution_input.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,6 +84,7 @@ public class UpdateActivity extends AppCompatActivity {
                 title = title_input.getText().toString().trim();
                 description = description_input.getText().toString().trim();
                 category = category_spinner.getSelectedItem().toString();
+
                 String attachmentPath = getIntent().getStringExtra("attachment_path");
 
                 try {
@@ -98,9 +105,9 @@ public class UpdateActivity extends AppCompatActivity {
                     Log.e("check", "Error updating task", e);
                     Toast.makeText(UpdateActivity.this, "An error occurred while updating the task", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
-
 
         delete_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +124,7 @@ public class UpdateActivity extends AppCompatActivity {
             category = getIntent().getStringExtra("category");
             description = getIntent().getStringExtra("description");
 
+
             // Dodane sprawdzenie czy execution_date nie jest null
             String executionDateString = getIntent().getStringExtra("execution_date");
             if (executionDateString != null) {
@@ -130,6 +138,7 @@ public class UpdateActivity extends AppCompatActivity {
             } else {
                 execution_date = System.currentTimeMillis(); // lub inna wartość domyślna
             }
+
 
             title_input.setText(title);
             description_input.setText(description);
@@ -171,6 +180,7 @@ public class UpdateActivity extends AppCompatActivity {
         calendar = Calendar.getInstance();
         new DatePickerDialog(UpdateActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
+
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 calendar.set(year, monthOfYear, dayOfMonth);
                 new TimePickerDialog(UpdateActivity.this, new TimePickerDialog.OnTimeSetListener() {
@@ -184,5 +194,6 @@ public class UpdateActivity extends AppCompatActivity {
                 }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show();
             }
         }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
+
     }
 }

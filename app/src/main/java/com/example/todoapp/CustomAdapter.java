@@ -29,7 +29,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     private ArrayList<String> task_id, title, description, category, execution_date, task_status, created_at;
     private ArrayList<String> attachment_path, originalAttachment_path;
     private MyDatabaseHelper myDb;
-    private static final String TAG = "checkAttach";
 
     public CustomAdapter(Activity activity, Context context, ArrayList<String> task_id, ArrayList<String> title, ArrayList<String> description, ArrayList<String> category, ArrayList<String> execution_date, ArrayList<String> task_status, ArrayList<String> created_at, ArrayList<String> attachment_path, MyDatabaseHelper myDb) {
         this.activity = activity;
@@ -69,13 +68,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         if (execution_date != null && position < execution_date.size() && execution_date.get(position) != null) {
             holder.execution_date_txt.setText(convertMillisToDateTime(Long.parseLong(execution_date.get(position))));
         } else {
-            holder.execution_date_txt.setText("N/A");
+            holder.execution_date_txt.setText("no date");
         }
 
         if (created_at != null && position < created_at.size() && created_at.get(position) != null) {
             holder.showCreatedDate.setText("Created at: " + convertMillisToDateTime(Long.parseLong(created_at.get(position))));
         } else {
-            holder.showCreatedDate.setText("Created at: N/A");
+            holder.showCreatedDate.setText("Created at: no date");
         }
 
         if (task_status != null && position < task_status.size()) {
@@ -95,10 +94,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
         if (attachment_path != null && position < attachment_path.size() && attachment_path.get(position) != null) {
             holder.attachmentInfoSingleTask.setText(attachment_path.get(position));
-            Log.d(TAG, "onBindViewHolder: Attachment Path - " + attachment_path.get(position));
         } else {
             holder.attachmentInfoSingleTask.setText("No attachment");
-            Log.d(TAG, "onBindViewHolder: No attachment");
         }
 
         holder.showNotifyButton.setOnClickListener(new View.OnClickListener() {
@@ -122,7 +119,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 intent.putExtra("title", title.get(position));
                 intent.putExtra("description", description.get(position));
                 intent.putExtra("category", category.get(position));
+
                 intent.putExtra("execution_date", Long.parseLong(execution_date.get(position)));
+
+
                 intent.putExtra("attachment_path", attachment_path.get(position));
                 activity.startActivityForResult(intent, 1);
             }

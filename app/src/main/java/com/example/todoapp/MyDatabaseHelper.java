@@ -11,12 +11,14 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
+
     private static final String TAG = "check";
 
     private Context context;
     private static final String DATABASE_NAME = "todoApp.db";
     private static final int DATABASE_VERSION = 1;
     private static final String TABLE_NAME = "tasks";
+
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_TITLE = "title";
@@ -27,9 +29,11 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_NOTIFICATION = "notification";
     public static final String COLUMN_CATEGORY = "category";
     public static final String COLUMN_ATTACHMENT_PATH = "attachment_path";
+    private Context context;
+
 
     MyDatabaseHelper(@Nullable Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, 1);
         this.context = context;
     }
 
@@ -78,56 +82,48 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     Cursor readAllData(String searchText) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TITLE + " LIKE '%" + searchText + "%'";
-        Log.d(TAG, "Executing query: " + query);
         SQLiteDatabase db = this.getReadableDatabase();
         return db != null ? db.rawQuery(query, null) : null;
     }
 
     Cursor readUnfinishedTasks(String searchText) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0 AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%'";
-        Log.d(TAG, "Executing query: " + query);
         SQLiteDatabase db = this.getReadableDatabase();
         return db != null ? db.rawQuery(query, null) : null;
     }
 
     Cursor readAllDataSortedByTime(String searchText) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TITLE + " LIKE '%" + searchText + "%' ORDER BY " + COLUMN_DUE_AT + " ASC";
-        Log.d(TAG, "Executing query: " + query);
         SQLiteDatabase db = this.getReadableDatabase();
         return db != null ? db.rawQuery(query, null) : null;
     }
 
     Cursor readUnfinishedTasksSortedByTime(String searchText) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0 AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%' ORDER BY " + COLUMN_DUE_AT + " ASC";
-        Log.d(TAG, "Executing query: " + query);
         SQLiteDatabase db = this.getReadableDatabase();
         return db != null ? db.rawQuery(query, null) : null;
     }
 
     Cursor readAllDataByCategory(String searchText, String category) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_CATEGORY + " = '" + category.toUpperCase() + "' AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%'";
-        Log.d(TAG, "Executing query: " + query);
         SQLiteDatabase db = this.getReadableDatabase();
         return db != null ? db.rawQuery(query, null) : null;
     }
 
     Cursor readUnfinishedTasksByCategory(String searchText, String category) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0 AND " + COLUMN_CATEGORY + " = '" + category.toUpperCase() + "' AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%'";
-        Log.d(TAG, "Executing query: " + query);
         SQLiteDatabase db = this.getReadableDatabase();
         return db != null ? db.rawQuery(query, null) : null;
     }
 
     Cursor readAllDataByCategorySortedByTime(String searchText, String category) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_CATEGORY + " = '" + category.toUpperCase() + "' AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%' ORDER BY " + COLUMN_DUE_AT + " ASC";
-        Log.d(TAG, "Executing query: " + query);
         SQLiteDatabase db = this.getReadableDatabase();
         return db != null ? db.rawQuery(query, null) : null;
     }
 
     Cursor readUnfinishedTasksByCategorySortedByTime(String searchText, String category) {
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0 AND " + COLUMN_CATEGORY + " = '" + category.toUpperCase() + "' AND " + COLUMN_TITLE + " LIKE '%" + searchText + "%' ORDER BY " + COLUMN_DUE_AT + " ASC";
-        Log.d(TAG, "Executing query: " + query);
         SQLiteDatabase db = this.getReadableDatabase();
         return db != null ? db.rawQuery(query, null) : null;
     }
@@ -139,6 +135,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_CATEGORY, category);
         cv.put(COLUMN_DESCRIPTION, description);
         cv.put(COLUMN_DUE_AT, execution_date);
+
         cv.put(COLUMN_ATTACHMENT_PATH, attachmentPath);
         try {
             long result = db.update(TABLE_NAME, cv, "id=?", new String[]{row_id});
@@ -149,7 +146,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error updating data", e);
-            Toast.makeText(context, "An error occurred while updating the task", Toast.LENGTH_SHORT).show();
+
         }
     }
 
@@ -158,7 +155,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     void updateTaskStatus(String taskId, boolean isChecked) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-
         cv.put(COLUMN_STATUS, isChecked ? 1 : 0);
         int result = db.update(TABLE_NAME, cv, COLUMN_ID + "=?", new String[]{taskId});
         if (result > 0) {

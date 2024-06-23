@@ -28,6 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
         hideTasksSwitch.setChecked(sharedPreferences.getBoolean("hideTasks", false));
         pickTimeNotificationsSpinner.setSelection(sharedPreferences.getInt("notificationTime", 1));
 
+
         hideTasksSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -35,6 +36,7 @@ public class SettingsActivity extends AppCompatActivity {
                 editor.putBoolean("hideTasks", isChecked);
                 editor.apply();
             }
+
         });
 
         pickTimeNotificationsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

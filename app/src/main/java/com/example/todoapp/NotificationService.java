@@ -23,17 +23,22 @@ public class NotificationService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "Handling intent");
 
+
         String taskId = intent.getStringExtra("taskId");
+
         String taskTitle = intent.getStringExtra("taskTitle");
         String taskDescription = intent.getStringExtra("taskDescription");
         String taskCategory = intent.getStringExtra("taskCategory");
         long executionTimeMillis = intent.getLongExtra("executionTimeMillis", -1);
+
         String attachmentPath = intent.getStringExtra("attachmentPath");
+
 
         createNotificationChannel();
 
         // Cancel any existing alarm for the task
         cancelAlarm(taskId);
+
 
         // Get notification time preference
         SharedPreferences sharedPreferences = getSharedPreferences("SettingsPreferences", MODE_PRIVATE);
@@ -43,6 +48,7 @@ public class NotificationService extends IntentService {
         // Set alarm before the task is due
         long alarmTime = executionTimeMillis - notificationTimeMillis;
         Log.d(TAG, "Execution time: " + executionTimeMillis + ", Alarm time: " + alarmTime);
+
 
         if (alarmTime > System.currentTimeMillis()) {
             setAlarm(alarmTime, taskId, taskTitle, taskDescription, taskCategory, executionTimeMillis, attachmentPath, notificationTimeMillis);
@@ -92,6 +98,7 @@ public class NotificationService extends IntentService {
         }
     }
 
+
     private void createNotificationChannel() {
         Log.d(TAG, "Creating notification channel");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -100,7 +107,6 @@ public class NotificationService extends IntentService {
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
-
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }

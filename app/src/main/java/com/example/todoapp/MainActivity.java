@@ -30,13 +30,10 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MyDatabaseHelperCheck";
-
     RecyclerView recyclerView;
     FloatingActionButton add_button;
     MyDatabaseHelper myDb;
     Button settingsButton;
-
     SearchView searchView;
     CheckBox sortByTimeCheckBox;
     Spinner categorySpinner;
@@ -59,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         sortByTimeCheckBox = findViewById(R.id.sortByTimeCheckBox);
         categorySpinner = findViewById(R.id.spinner3);
 
+
         sortByTimeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -72,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
             }
+
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -139,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
         refreshData();
+
     }
 
     @Override
@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             refreshData();
         }
+
     }
 
     void storeDataInArrays(String searchText, String selectedCategory) {
@@ -167,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (cursor != null && cursor.getCount() == 0) {
-            Log.d(TAG, "No data found for category: " + selectedCategory + " and searchText: " + searchText);
             Toast.makeText(this, "Brak danych", Toast.LENGTH_SHORT).show();
         } else {
             task_id.clear();
