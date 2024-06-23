@@ -66,13 +66,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         holder.description_txt.setText(description.get(position));
 
         if (execution_date != null && position < execution_date.size() && execution_date.get(position) != null) {
-            holder.execution_date_txt.setText(convertMillisToDate(Long.parseLong(execution_date.get(position))));
+            holder.execution_date_txt.setText(convertMillisToDateTime(Long.parseLong(execution_date.get(position))));
         } else {
             holder.execution_date_txt.setText("no date");
         }
 
         if (created_at != null && position < created_at.size() && created_at.get(position) != null) {
-            holder.showCreatedDate.setText("Created at: " + convertMillisToDate(Long.parseLong(created_at.get(position))));
+            holder.showCreatedDate.setText("Created at: " + convertMillisToDateTime(Long.parseLong(created_at.get(position))));
         } else {
             holder.showCreatedDate.setText("Created at: no date");
         }
@@ -119,7 +119,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 intent.putExtra("title", title.get(position));
                 intent.putExtra("description", description.get(position));
                 intent.putExtra("category", category.get(position));
-                intent.putExtra("execution_date", execution_date.get(position));
+
+                intent.putExtra("execution_date", Long.parseLong(execution_date.get(position)));
+
+
                 intent.putExtra("attachment_path", attachment_path.get(position));
                 activity.startActivityForResult(intent, 1);
             }
@@ -131,8 +134,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         return task_id.size();
     }
 
-    private String convertMillisToDate(long millis) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+    private String convertMillisToDateTime(long millis) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return sdf.format(new Date(millis));
     }
 

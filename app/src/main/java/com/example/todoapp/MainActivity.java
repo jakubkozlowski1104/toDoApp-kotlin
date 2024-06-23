@@ -1,5 +1,7 @@
 package com.example.todoapp;
 
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,11 +56,21 @@ public class MainActivity extends AppCompatActivity {
         sortByTimeCheckBox = findViewById(R.id.sortByTimeCheckBox);
         categorySpinner = findViewById(R.id.spinner3);
 
-        sortByTimeCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> refreshData());
 
-        settingsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
+        sortByTimeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                refreshData();
+            }
+        });
+//check
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -126,6 +138,16 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
         refreshData();
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            refreshData();
+        }
+
     }
 
     void storeDataInArrays(String searchText, String selectedCategory) {

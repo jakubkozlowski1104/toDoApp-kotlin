@@ -1,8 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -14,8 +18,20 @@
         android:theme="@style/Theme.ToDoApp"
         tools:targetApi="31">
 
-        <!-- Deklaracja usługi znajduje się tutaj -->
-        <service android:name=".NotificationService" />
+        <!-- Deklaracja usługi NotificationService -->
+        <service
+            android:name=".NotificationService"
+            android:exported="false" />
+
+        <!-- Deklaracja odbiornika AlarmReceiver -->
+        <receiver android:name=".AlarmReceiver" android:exported="true"/>
+
+        <receiver android:name=".BootReceiver" android:exported="true" android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
 
         <!-- Deklaracje pozostałych komponentów aplikacji -->
         <activity
@@ -37,6 +53,5 @@
             </intent-filter>
         </activity>
     </application>
-
 
 </manifest>

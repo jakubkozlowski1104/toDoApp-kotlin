@@ -11,8 +11,15 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
+
+    private static final String TAG = "check";
+
+    private Context context;
     private static final String DATABASE_NAME = "todoApp.db";
+    private static final int DATABASE_VERSION = 1;
     private static final String TABLE_NAME = "tasks";
+
+
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_TITLE = "title";
     public static final String COLUMN_DESCRIPTION = "description";
@@ -121,18 +128,29 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return db != null ? db.rawQuery(query, null) : null;
     }
 
-    void updateData(String row_id, String title, String category, String description, long execution_date) {
+    void updateData(String row_id, String title, String category, String description, long execution_date, String attachmentPath) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_TITLE, title);
         cv.put(COLUMN_CATEGORY, category);
         cv.put(COLUMN_DESCRIPTION, description);
         cv.put(COLUMN_DUE_AT, execution_date);
-        long result = db.update(TABLE_NAME, cv, "id=?", new String[]{row_id});
-        if(result == -1) {
-            Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show();
+
+        cv.put(COLUMN_ATTACHMENT_PATH, attachmentPath);
+        try {
+            long result = db.update(TABLE_NAME, cv, "id=?", new String[]{row_id});
+            if(result == -1) {
+                Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Task updated successfully", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating data", e);
+
         }
     }
+
+
 
     void updateTaskStatus(String taskId, boolean isChecked) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -154,4 +172,17 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "Successfully deleted!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public String getLastInsertedTaskId() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT last_insert_rowid()", null);
+        if (cursor != null && cursor.moveToFirst()) {
+            String lastId = cursor.getString(0);
+            cursor.close();
+            return lastId;
+        }
+        return null;
+    }
+
+
 }
